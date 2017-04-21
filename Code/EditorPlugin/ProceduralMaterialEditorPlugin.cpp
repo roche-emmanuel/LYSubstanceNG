@@ -28,7 +28,7 @@ ProceduralMaterialEditorPlugin::ProceduralMaterialEditorPlugin(IEditor* editor)
 {
 #if defined(USE_SUBSTANCE)
 
-    m_registered = RegisterMultiInstanceQtViewPane<QProceduralMaterialEditorMainWindow>(editor, "Substance Editor", LyViewPane::CategoryPlugIns);
+    m_registered = RegisterMultiInstanceQtViewPane<QProceduralMaterialEditorMainWindow>(editor, "Substance NG Editor", LyViewPane::CategoryPlugIns);
     if (m_registered)
     {
         RegisterModuleResourceSelectors(GetIEditor()->GetResourceSelectorHost());
