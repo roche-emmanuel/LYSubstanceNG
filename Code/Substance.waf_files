@@ -8,7 +8,27 @@
     "auto": {
         "Include": [
             "Include/Substance/IProceduralMaterial.h",
-            "Include/Substance/SubstanceBus.h"
+            "Include/Substance/SubstanceBus.h",
+            "Include/Substance/callbacks.h",
+            "Include/Substance/context.h",
+            "Include/Substance/datadesc.h",
+            "Include/Substance/defines.h",
+            "Include/Substance/device.h",
+            "Include/Substance/engineid.h",
+            "Include/Substance/enums.h",
+            "Include/Substance/errors.h",
+            "Include/Substance/extradata.h",
+            "Include/Substance/handle.h",
+            "Include/Substance/hardresources.h",
+            "Include/Substance/inputdesc.h",
+            "Include/Substance/outputdesc.h",
+            "Include/Substance/pixelformat.h",
+            "Include/Substance/platformdep.h",
+            "Include/Substance/substance.h",
+            "Include/Substance/texture.h",
+            "Include/Substance/texturedesc.h",
+            "Include/Substance/textureinput.h",
+            "Include/Substance/version.h"
         ],
         "Source": [
             "Source/ProceduralFlowNodes.cpp",

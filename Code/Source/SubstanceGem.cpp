@@ -19,13 +19,15 @@
 #include <platform_impl.h>
 #include "SubstanceGem.h"
 #include <FlowSystem/Nodes/FlowBaseNode.h>
-
+#include <AzCore/IO/SystemFile.h>
 
 #if defined(USE_SUBSTANCE)
 #include "SubstanceAPI.h"
 #include <CryLibrary.h>
 #include <I3DEngine.h>
 #include <IRenderer.h>
+
+#include <Substance/framework/package.h>
 
 //Cvars
 int substance_coreCount;
@@ -317,9 +319,128 @@ bool SubstanceGem::HasRenderCompleted(ProceduralMaterialRenderUID uid) const
 	return m_SubstanceLibAPI->HasRenderCompleted(uid);
 }
 
-bool SubstanceGem::CreateProceduralMaterial(const char* sbsarPath, const char* smtlPath)
+bool SubstanceGem::CreateProceduralMaterial(const char* basePath, const char* sbsarPath, const char* smtlPath)
 {
-	return m_SubstanceLibAPI->CreateProceduralMaterial(sbsarPath, smtlPath);
+	AZ_TracePrintf("SubstanceGem", "Should create prodecural material which sbsarPath=%s, smtlPath=%s", sbsarPath, smtlPath);
+	
+	// AZStd::string gameFolder = Path::GetEditingGameDataFolder();
+	AZStd::string fullPath = basePath;
+	fullPath +=AZStd::string("/")+AZStd::string(sbsarPath);
+	// AZStd::string fullPath = sbsarPath;
+	AZ_TracePrintf("SubstanceGem", "using full sbsar path: %s", fullPath.c_str());
+
+	// load the content of the sbsar file:
+	AZ::IO::SystemFile file;
+
+	bool res = file.Open(fullPath.c_str(),AZ::IO::SystemFile::SF_OPEN_READ_ONLY);
+	if(!res) {
+		AZ_TracePrintf("SubstanceGem", "ERROR: Cannot open file %s.", fullPath.c_str());
+		return false;
+	}
+
+	// Get the length of the file:
+	auto len = file.Length();
+	AZ_TracePrintf("SubstanceGem", "file size is: %d bytes.", len);
+
+	// Prepare our buffer:
+	char* data = new char[len];
+	memset(data, 0, len);
+
+	// Read the content of the file:
+	auto rlen = file.Read(len, data);
+	if(rlen != len) {
+		AZ_TracePrintf("SubstanceGem", "ERROR: did not read expected number of bytes: %d != %d.", rlen, len);
+		return false;	
+	}
+
+	// We may close the file:
+	file.Close();
+
+	// So here we try to load our package:
+	SubstanceAir::PackageDesc* pdesc = nullptr;
+	try {
+		pdesc = new SubstanceAir::PackageDesc(data,len);
+	}
+	catch(...) {
+		AZ_TracePrintf("SubstanceGem", "Exception occured when trying to create substance package.");
+		return false;
+	}
+
+	// We can delete our buffer:
+	delete [] data;
+
+	// This package should not be valid:
+	AZ_TracePrintf("SubstanceGem", "Substance package is: %s", pdesc->isValid() ? "VALID" : "INVALID");
+
+	if(!pdesc->isValid()) {
+		return false;
+	}
+
+	// Retrieve the graphs in this package:
+	AZ_TracePrintf("SubstanceGem", "Substance package contains %d graphs.", pdesc->getGraphs().size());
+
+	// We only consider the first graph available,
+	// and we retrieve the outputs from it:
+	auto graph = pdesc->getGraphs().front();
+
+	auto outs = graph.mOutputs;
+	AZ_TracePrintf("SubstanceGem", "Package main graph contains %d outputs.", outs.size());
+
+	AZStd::string content = string_format("<ProceduralMaterial Source=\"%s\">\n", sbsarPath);
+	
+	// List the output IDs and usage:
+	AZStd::string fbase = sbsarPath;
+	fbase = fbase.substr(0,fbase.size()-6);
+
+	for(auto& out: outs) {
+		AZ_TracePrintf("SubstanceGem", "Found output of type %d with id=%d.", (int)out.mChannel, out.mUid);
+		AZStd::string otype = "";
+		switch(out.mChannel) {
+		case SubstanceAir::Channel_Diffuse: 
+			otype = "diffuse"; break;
+		case SubstanceAir::Channel_Normal: 
+			otype = "normal"; break;
+		case SubstanceAir::Channel_Specular: 
+			otype = "specular"; break;
+		case SubstanceAir::Channel_Height: 
+			otype = "height"; break;
+		default:
+			AZ_TracePrintf("SubstanceGem", "Ignoring output of type %d.", (int)out.mChannel);
+			break;
+		}
+		if(!otype.empty()) {
+			// Add a line in the output content:
+			content += string_format("  <Output ID=\"%d\" Enabled=\"1\" Compressed=\"1\" File=\"%s_%s.sub\" />\n", out.mUid,fbase.c_str(),otype.c_str());
+		}
+	}
+
+	// Todo: handle the input parameters here too.
+
+	// close the parent tag:
+	content += "</ProceduralMaterial>\n";
+
+	AZ_TracePrintf("SubstanceGem", "Should write smtl content: %s", content.c_str());
+	
+	// Write this file:
+	fullPath = basePath+AZStd::string("/")+AZStd::string(smtlPath);
+	res = file.Open(fullPath.c_str(),AZ::IO::SystemFile::SF_OPEN_WRITE_ONLY|AZ::IO::SystemFile::SF_OPEN_CREATE);
+	if(!res) {
+		AZ_TracePrintf("SubstanceGem", "ERROR: Cannot open file %s for writing.", fullPath.c_str());
+		return false;
+	}
+
+	rlen = file.Write(content.c_str(), content.size());
+	if(rlen != content.size()) {
+		AZ_TracePrintf("SubstanceGem", "ERROR: did not write expected number of bytes: %d != %d.", rlen, content.size());
+		return false;	
+	}
+
+	file.Close();
+
+	AZ_TracePrintf("SubstanceGem", "SMTL file %s written successfully.", fullPath.c_str());
+
+	return true;
+	//return m_SubstanceLibAPI->CreateProceduralMaterial(sbsarPath, smtlPath);
 }
 
 bool SubstanceGem::SaveProceduralMaterial(IProceduralMaterial* pMaterial, const char* path)

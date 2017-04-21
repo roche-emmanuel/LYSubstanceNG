@@ -292,6 +292,7 @@ void QProceduralMaterialEditorMainWindow::OnFileImportSubstanceTriggered()
             return;
         }
 
+        // Keep the absolute file path here instead of relative:
         sbsarFile = Util::AbsolutePathToGamePath(sbsarFile);
 
         string stdSbarFile = string(sbsarFile.toStdString().c_str());
@@ -314,7 +315,9 @@ void QProceduralMaterialEditorMainWindow::OnFileImportSubstanceTriggered()
         }
 
         bool createdMaterial = false;
-        EBUS_EVENT_RESULT(createdMaterial, SubstanceRequestBus, CreateProceduralMaterial, stdSbarFile.c_str(), smtlFile.c_str());
+        AZStd::string basePath = Path::GetEditingGameDataFolder().c_str();
+
+        EBUS_EVENT_RESULT(createdMaterial, SubstanceRequestBus, CreateProceduralMaterial, basePath.c_str(), stdSbarFile.c_str(), smtlFile.c_str());
         if (!createdMaterial)
         {
             QMessageBox msgBox;

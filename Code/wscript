@@ -17,6 +17,7 @@ SUBFOLDERS = [
 def build(bld):
 
     bld.DefineGem(
+        use            = [ 'AzCore' ], # Note that this is NOT needed.
         includes       = [ bld.Path('Code/CryEngine/CryAction')],
         file_list      = ['Substance.waf_files'],
 
@@ -25,6 +26,10 @@ def build(bld):
 
         # Substance is only supported on windows
         win_uselib     = ['SUBSTANCE'],
+
+        libpath = [bld.Path('Gems/SubstanceNG/Code/Libs/Win64')],
+        lib     = ['pfxlinkercommon','algcompression','tinyxml','substance_linker_static', 'substance_sse2_blend_static','substance_framework'],
+        # could also add: 'substance_d3d11pc_blend_static' as engine ?
 
         disable_tests  = not 'win' in bld.env['PLATFORM'],
     )

@@ -32,7 +32,7 @@ def build(bld):
         includes        = [bld.Path('Code/CryEngine/CryCommon'),
                            bld.Path('Code/Sandbox/Plugins/EditorCommon'),
                            bld.Path('Code/CryEngine/CryAction'),
-                           bld.Path('Gems/Substance/Code/Include') ],
+                           bld.Path('Gems/SubstanceNG/Code/Include') ],
         defines         = ['QT_NO_DEBUG',
                            'QT_LARGEFILE_SUPPORT',
                            'QT_DLL',

@@ -70,7 +70,7 @@ public:
 	virtual void RenderEditorPreviewSync() = 0;
 
 	/// Given a substance archive and destination path, create the appropriate smtl/sub files.
-	virtual bool CreateProceduralMaterial(const char* sbsarPath, const char* smtlPath) = 0;
+	virtual bool CreateProceduralMaterial(const char* basePath, const char* sbsarPath, const char* smtlPath) = 0;
 
 	/// Save an existing procedural material to disk, serializing all property changes.
 	virtual bool SaveProceduralMaterial(IProceduralMaterial* pMaterial, const char* path = nullptr) = 0;
