@@ -1,0 +1,12 @@
+{
+    "GemFormatVersion": 3,
+    "Uuid": "a2f08ba9713f485a8485d7588e5b120f",
+    "Name": "Substance",
+    "DisplayName": "Allegorithmic Substance",
+    "Summary": "Allegorithmic's Substance offers powerful and comprehensive texture and material authoring software.",
+    "Version": "2.0.0",
+    "LinkType": "Dynamic",
+    "EditorTargets": ["ProceduralMaterialEditorPlugin"],
+    "IconPath": "preview.png",
+    "Tags": ["Materials", "Material Library", "Textures", "Texture Library", "Procedural"]
+}

@@ -1,0 +1,28 @@
+{
+    "none": {
+        "Root": [
+            "dllmain.cpp",
+            "GraphInputWidgets.cpp",
+            "GraphInputWidgets.h",
+            "OutputPreviewWidget.cpp",
+            "OutputPreviewWidget.h",
+            "ProceduralMaterialEditorPlugin.cpp",
+            "ProceduralMaterialEditorPlugin.h",
+            "ProceduralMaterialEditorUI.qrc",
+            "ProceduralMaterialScanner.cpp",
+            "ProceduralMaterialScanner.h",
+            "QProceduralMaterialEditorMainWindow.cpp",
+            "QProceduralMaterialEditorMainWindow.h",
+            "QProceduralMaterialEditorMainWindow.ui",
+            "stdafx.cpp",
+            "stdafx.h",
+            "Util.h"
+        ],
+        "Icons": [ 
+            "Icons/Folder_Icon.png",
+            "Icons/Locked_Icon.png",
+            "Icons/ProceduralMaterial_Icon.png",
+            "Icons/Unlocked_Icon.png"
+        ]
+    }
+}

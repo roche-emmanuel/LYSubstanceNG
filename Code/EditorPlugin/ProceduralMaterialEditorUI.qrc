@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/">
+    <file>Icons/Folder_Icon.png</file>
+    <file>Icons/Locked_Icon.png</file>
+    <file>Icons/ProceduralMaterial_Icon.png</file>
+    <file>Icons/Unlocked_Icon.png</file>
+  </qresource>
+</RCC>

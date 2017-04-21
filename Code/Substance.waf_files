@@ -1,0 +1,22 @@
+{
+    "none": {
+        "Source": [
+            "Source/StdAfx.cpp",
+            "Source/StdAfx.h"
+        ]
+    },
+    "auto": {
+        "Include": [
+            "Include/Substance/IProceduralMaterial.h",
+            "Include/Substance/SubstanceBus.h"
+        ],
+        "Source": [
+            "Source/ProceduralFlowNodes.cpp",
+            "Source/ProceduralFlowNodes.h",
+            "Source/SubstanceAPI.h",
+            "Source/SubstanceAPI.cpp",
+            "Source/SubstanceGem.h",
+            "Source/SubstanceGem.cpp"
+        ]
+    }
+}
