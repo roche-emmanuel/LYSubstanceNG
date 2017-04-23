@@ -20,6 +20,7 @@
 #include "SubstanceGem.h"
 #include <FlowSystem/Nodes/FlowBaseNode.h>
 #include <AzCore/IO/SystemFile.h>
+#include <AzToolsFramework/API/EditorAssetSystemAPI.h>
 
 #if defined(USE_SUBSTANCE)
 #include "SubstanceAPI.h"
@@ -28,6 +29,7 @@
 #include <IRenderer.h>
 
 #include <Substance/framework/package.h>
+#include <SubstanceMaterial.h>
 
 //Cvars
 int substance_coreCount;
@@ -281,7 +283,41 @@ int SubstanceGem::GetMaximumOutputSize() const
 
 IProceduralMaterial* SubstanceGem::GetMaterialFromPath(const char* path, bool bForceLoad) const
 {
-	return m_SubstanceLibAPI->GetMaterialFromPath(CryStringUtils::ToLower(path).c_str(), bForceLoad);
+	// using namespace AZ::IO;
+
+    // char rpath[AZ_MAX_PATH_LEN] = { 0 };
+    // gEnv->pFileIO->ResolvePath(path, rpath, AZ_MAX_PATH_LEN);
+
+	string rootPath = gEnv->pFileIO->GetAlias("@root@");
+	string assetPath = gEnv->pFileIO->GetAlias("@assets@");
+	AZ_TracePrintf("SubstanceGem", "Root path: %s", rootPath.c_str());
+	AZ_TracePrintf("SubstanceGem", "Asset path: %s", assetPath.c_str());
+
+	// string resolvedPath(rpath);
+	string resolvedPath;
+    if (gEnv->IsEditor())
+    {
+        // resolvedPath = "@assets@/" + string(path);
+		const char* resultValue = nullptr;
+        EBUS_EVENT_RESULT(resultValue, AzToolsFramework::AssetSystemRequestBus, GetAbsoluteDevGameFolderPath);
+		if(!resultValue) {
+			AZ_TracePrintf("SubstanceGem", "No result from GetAbsoluteGameFolderPath()");
+			return nullptr;
+		}
+
+		resolvedPath = string(resultValue)+"/"+string(path);
+    }
+
+	if(!AZ::IO::SystemFile::Exists(resolvedPath.c_str())) {
+		AZ_TracePrintf("SubstanceGem", "Material file %s doesn't exist yet'", resolvedPath.c_str());
+		return nullptr;
+	}
+
+	// Create a new substance material and return it:
+	AZ_TracePrintf("SubstanceGem", "Loading procedural material from path: %s", path);
+	SubstanceMaterial* mat = new SubstanceMaterial(path);
+	return mat;
+	// return m_SubstanceLibAPI->GetMaterialFromPath(CryStringUtils::ToLower(path).c_str(), bForceLoad);
 }
 
 IGraphInstance* SubstanceGem::GetGraphInstance(GraphInstanceID graphInstanceID) const

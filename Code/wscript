@@ -17,7 +17,7 @@ SUBFOLDERS = [
 def build(bld):
 
     bld.DefineGem(
-        use            = [ 'AzCore' ], # Note that this is NOT needed.
+        use            = [ 'AzCore', 'AzToolsFramework' ],
         includes       = [ bld.Path('Code/CryEngine/CryAction')],
         file_list      = ['Substance.waf_files'],
 

@@ -36,7 +36,11 @@
             "Source/SubstanceAPI.h",
             "Source/SubstanceAPI.cpp",
             "Source/SubstanceGem.h",
-            "Source/SubstanceGem.cpp"
+            "Source/SubstanceGem.cpp",
+            "Source/SubstanceMaterial.h",
+            "Source/SubstanceMaterial.cpp",
+            "Source/GraphInstance.h",
+            "Source/GraphInstance.cpp"
         ]
     }
 }
