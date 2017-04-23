@@ -912,6 +912,7 @@ void QProceduralMaterialEditorMainWindow::DisplayProceduralMaterial(const char* 
 
             //assemble inputs by groups
             std::map<QString, std::vector<IGraphInput*> > inputMap;
+            AZ_TracePrintf("Default", "Number of inputs in Qproxxx == %d",pGraph->GetInputCount());
             for (int i = 0; i < pGraph->GetInputCount(); i++)
             {
                 IGraphInput* pInput = pGraph->GetInput(i);

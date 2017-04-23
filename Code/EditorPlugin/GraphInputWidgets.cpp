@@ -102,6 +102,8 @@ IGraphInstance* CGraphUndoCommand::CommitValue(const GraphValueVariant& value)
 		EBUS_EVENT_RESULT(pGraph, SubstanceRequestBus, GetGraphInstance, m_GraphInstanceID);
 		if (pGraph)
 		{
+			AZ_TracePrintf("Default", "Number of inputs in GraphInputWidgets == %d",pGraph->GetInputCount());
+
 			for (int i = 0; i < pGraph->GetInputCount(); i++)
 			{
 				IGraphInput* pInput = pGraph->GetInput(i);

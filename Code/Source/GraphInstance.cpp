@@ -53,7 +53,7 @@ GraphInstanceID GraphInstance::GetGraphInstanceID() const
 
 int GraphInstance::GetInputCount() const
 {
-	AZ_TracePrintf("Gr♂aphInstance", "GetInputCount == 0");
+	AZ_TracePrintf("GraphInstance", "GetInputCount == 0");
 	// Number of inputs:
 	// return _instance->getInputs().size();
 	return 0;
@@ -61,7 +61,7 @@ int GraphInstance::GetInputCount() const
 
 IGraphInput* GraphInstance::GetInput(int index)
 {
-	AZ_TracePrintf("Gr♂aphInstance", "GetInput: %d", index);
+	AZ_TracePrintf("GraphInstance", "GetInput: %d", index);
 	return nullptr;
 
 	// return _instance->getInputs()[index];
@@ -91,13 +91,16 @@ IGraphInput* GraphInstance::GetInputByID(GraphInputID inputID)
 
 int GraphInstance::GetOutputCount() const
 {
+	AZ_TracePrintf("GraphInstance", "GetOuputCount == 0");
+	return 0;
+
 	// Number of outputs:
-	return _instance->getInputs().size();
+	// return _instance->getInputs().size();
 }
 
 IGraphOutput* GraphInstance::GetOutput(int index)
 {
-	AZ_TracePrintf("GraphInstance", "GetInput: %d", index);
+	AZ_TracePrintf("GraphInstance", "GetOutput: %d", index);
 	return nullptr;
 }
 
