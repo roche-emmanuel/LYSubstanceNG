@@ -1,6 +1,6 @@
 
 /** @file GraphInstance.cpp
-	@brief Source File for the Substance material implementation
+	@brief Source File for the Substance graph instance implementation
 	@author Emmanuel ROCHE
 	@date 22/04/2017
 	@copyright Emmanuel ROCHE. All rights reserved.
@@ -9,6 +9,7 @@
 
 #if defined(USE_SUBSTANCE)
 #include "GraphInstance.h"
+#include "GraphOutput.h"
 #include "SubstanceMaterial.h"
 #include <AzCore/IO/SystemFile.h>
 
@@ -25,11 +26,23 @@ GraphInstance::GraphInstance(SubstanceMaterial* parent, int idx) :
 
 	SubstanceAir::PackageDesc* pdesc = parent->getPackage();
 	_instance = new SubstanceAir::GraphInstance(pdesc->getGraphs()[0]);
+
+	// Init the outputs:
+	for(auto& out: _instance->getOutputs()) {
+		// Create a new output object:
+		_outputs.push_back(new GraphOutput(this, out->mDesc.mUid));
+	}
 }
 
 GraphInstance::~GraphInstance()
 {
 	AZ_TracePrintf("GraphInstance", "Deleting GraphInstance object.");
+	// Release all the outputs:
+	for(auto& out: _outputs) {
+		delete out;
+	}
+	_outputs.clear();
+	
 	if(_instance) {
 		delete _instance;
 	}
@@ -91,22 +104,28 @@ IGraphInput* GraphInstance::GetInputByID(GraphInputID inputID)
 
 int GraphInstance::GetOutputCount() const
 {
-	AZ_TracePrintf("GraphInstance", "GetOuputCount == 0");
-	return 0;
-
 	// Number of outputs:
-	// return _instance->getInputs().size();
+	int num = _instance->getOutputs().size();
+	AZ_TracePrintf("GraphInstance", "GetOuputCount = %d", num);
+	return num;
 }
 
 IGraphOutput* GraphInstance::GetOutput(int index)
 {
 	AZ_TracePrintf("GraphInstance", "GetOutput: %d", index);
-	return nullptr;
+	return _outputs[index];
 }
 
 IGraphOutput* GraphInstance::GetOutputByID(GraphOutputID outputID)
 {
 	AZ_TracePrintf("GraphInstance", "GetOutputByID: %d", (int)outputID);
+	for(auto& out: _outputs) {
+		if(out->GetGraphOutputID() == outputID) {
+			return out;
+		}
+	}
+
+	AZ_TracePrintf("GraphInstance", "Cannot find output with ID = %d", (int)outputID);
 	return nullptr;
 }
 

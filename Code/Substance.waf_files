@@ -40,7 +40,9 @@
             "Source/SubstanceMaterial.h",
             "Source/SubstanceMaterial.cpp",
             "Source/GraphInstance.h",
-            "Source/GraphInstance.cpp"
+            "Source/GraphInstance.cpp",
+            "Source/GraphOutput.h",
+            "Source/GraphOutput.cpp"
         ]
     }
 }

@@ -15,6 +15,8 @@
 
 class SubstanceMaterial;
 
+class GraphOutput;
+
 /**/
 class GraphInstance : public IGraphInstance
 {
@@ -52,6 +54,9 @@ public:
 	/// Get an output object by ID
 	virtual IGraphOutput* GetOutputByID(GraphOutputID outputID);
 
+	//! Retrieve the substance graph instance:
+	inline SubstanceAir::GraphInstance* getInstance() const { return _instance; }
+
 protected:
 	// Pointer on the parent material:
 	SubstanceMaterial* _parent;
@@ -61,6 +66,10 @@ protected:
 
 	// Graph instance on the given graph:
 	SubstanceAir::GraphInstance* _instance;
+
+	// List of graph outputs:
+	typedef std::vector<GraphOutput*> GraphOutputList;
+	GraphOutputList _outputs;
 };
 
 #endif // USE_SUBSTANCE
