@@ -37,6 +37,23 @@
 #define GEMSUBSTANCE_API DLL_IMPORT
 #endif
 
+#define logDEBUG(msg) { \
+    std::ostringstream os; \
+    os.precision(9); \
+    os << std::fixed << msg; \
+    AZ_TracePrintf("SubstanceNG", os.str().c_str()); \
+}
+
+#define logERROR(msg) { \
+    std::ostringstream os; \
+    os.precision(9); \
+    os << std::fixed << msg; \
+    AZ_Error("SubstanceNG", false, os.str().c_str()); \
+}
+
+#define CHECK(cond,msg) if(!(cond)) { logERROR(msg); return; }
+#define CHECK_RET(cond,ret,msg) if(!(cond)) { THROW_MSG(msg); return ret; }
+
 #include "Substance/IProceduralMaterial.h"
 
 template<typename ... Args>
@@ -47,6 +64,7 @@ AZStd::string string_format( const AZStd::string& format, Args ... args )
 	snprintf( buf.get(), size, format.c_str(), args ... );
 	return AZStd::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
 }
+
 
 //CVars
 extern int substance_coreCount;

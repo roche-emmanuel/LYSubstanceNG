@@ -676,8 +676,11 @@ void QProceduralMaterialEditorMainWindow::CreateMaterial(IProceduralMaterial* pP
                     if (gotm[gc].srcType == pOutput->GetChannel())
                     {
                         SEfResTexture& resTexture = shaderResources.m_Textures[gotm[gc].dstType];
+                        logDEBUG("Path 1: "<<pOutput->GetPath());
                         resTexture.m_Name = CryStringUtils::ToLower(PathUtil::ToUnixPath(pOutput->GetPath()));
+                        logDEBUG("Path 2: "<<resTexture.m_Name.c_str());
                         resTexture.m_Name = Path::FullPathToGamePath(resTexture.m_Name.c_str());
+                        logDEBUG("Requesting texture from path: "<< resTexture.m_Name.c_str());
                         break;
                     }
                 }

@@ -74,6 +74,8 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 
 	virtual bool LoadTextureData(const char* path, STextureLoadData& loadData) override
 	{
+		logDEBUG("in LoadTextureData with path: "<<path);
+
 		if (m_SubstanceLibAPI)
 		{
 			SSubstanceLoadData subData;
@@ -99,6 +101,7 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 
 	virtual void Update() override
 	{
+		// logDEBUG("in CTextureLoadHandler_Substance::Update()");
 		if (m_SubstanceLibAPI)
 		{
 			m_SubstanceLibAPI->Update();
@@ -206,6 +209,7 @@ void SubstanceGem::RegisterTextureHandler()
 {
 	if (I3DEngine* p3DEngine = gEnv->p3DEngine)
 	{
+		logDEBUG("Registering Substance texture loader.");
 		m_TextureLoadHandler = new CTextureLoadHandler_Substance(m_SubstanceLibAPI);
 		p3DEngine->AddTextureLoadHandler(m_TextureLoadHandler);
 	}

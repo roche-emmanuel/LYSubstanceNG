@@ -61,6 +61,9 @@ protected:
 
 	// Substance output instance:
 	SubstanceAir::OutputInstance* _instance;
+
+	// outputpath for this graph output:
+	AZStd::string _outputPath;
 };
 
 #endif // USE_SUBSTANCE

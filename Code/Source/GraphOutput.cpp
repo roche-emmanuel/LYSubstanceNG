@@ -26,30 +26,7 @@ GraphOutput::GraphOutput(GraphInstance* parent, GraphOutputID id) :
 		AZ_TracePrintf("GraphOutput", "ERROR: Cannot find output with ID=%d", id);
 		return;
 	}
-}
 
-GraphOutput::~GraphOutput()
-{
-	AZ_TracePrintf("GraphOutput", "Deleting GraphOutput object.");
-}
-
-IGraphInstance* GraphOutput::GetGraphInstance() const
-{
-	return _parent;
-}
-
-GraphOutputID GraphOutput::GetGraphOutputID() const
-{
-	return _id;
-}
-
-const char* GraphOutput::GetLabel() const
-{
-	return _instance->mDesc.mLabel.c_str();
-}
-
-const char* GraphOutput::GetPath() const
-{
 	// use the sbsar path and add the proper ending to the path:
 	AZStd::string fbase = _parent->GetProceduralMaterial()->GetSourcePath();
 	fbase = fbase.substr(0,fbase.size()-6);
@@ -69,9 +46,34 @@ const char* GraphOutput::GetPath() const
 		otype = "unknown"; break;
 	}
 
-	auto result = string_format("%s_%s.sub", fbase.c_str(),otype.c_str());
-	AZ_TracePrintf("GraphOutput", "Returning output paht: %s", result.c_str());
-	return result.c_str();
+	_outputPath = string_format("%s_%s.sub", fbase.c_str(),otype.c_str()).c_str();
+}
+
+GraphOutput::~GraphOutput()
+{
+	AZ_TracePrintf("GraphOutput", "Deleting GraphOutput object.");
+}
+
+IGraphInstance* GraphOutput::GetGraphInstance() const
+{
+	return _parent;
+}
+
+GraphOutputID GraphOutput::GetGraphOutputID() const
+{
+	return _id;
+}
+
+const char* GraphOutput::GetLabel() const
+{
+	logDEBUG("Retrieving GraphOutput label.");
+	return _instance->mDesc.mLabel.c_str();
+}
+
+const char* GraphOutput::GetPath() const
+{
+	logDEBUG("Returning output path:" << _outputPath.c_str());
+	return _outputPath.c_str();
 }
 
 bool GraphOutput::IsEnabled() const
@@ -96,7 +98,7 @@ void GraphOutput::SetDirty()
 
 bool GraphOutput::GetEditorPreview(SGraphOutputEditorPreview& preview)
 {
-	AZ_TracePrintf("GraphOutput", "Trying to generate Output preview for %d",_id);
+	logDEBUG("Trying to generate Output preview for id "<<(int)_id);
 	return false;
 }
 
