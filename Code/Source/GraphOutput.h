@@ -52,6 +52,9 @@ public:
 	/// Get the associated output channel.
 	virtual GraphOutputChannel GetChannel() const;
 
+	/// Retrieve the output instance:
+	inline SubstanceAir::OutputInstance* getInstance() const { return _instance; }
+
 protected:
 	// Pointer on the parent graph instance:
 	GraphInstance* _parent;

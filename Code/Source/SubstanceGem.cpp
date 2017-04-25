@@ -30,6 +30,9 @@
 
 #include <Substance/framework/package.h>
 #include <SubstanceMaterial.h>
+#include <GraphInstance.h>
+#include <GraphOutput.h>
+#include <Substance/framework/renderer.h>
 
 //Cvars
 int substance_coreCount;
@@ -77,30 +80,84 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 		logDEBUG("in LoadTextureData with path: "<<path);
 
 		// Read the XML file:
-		
-		logDEBUG("Creating substance material from "<<path);
-		SubstanceMaterial smat(path);
 
+		logDEBUG("Loading XML sub texture: "<<path);
+		auto resolvedPath = getAbsoluteAssetPath(path);
 
-		if (m_SubstanceLibAPI)
-		{
-			SSubstanceLoadData subData;
-
-			memset(&subData, 0, sizeof(subData));
-			subData.m_pTexture = reinterpret_cast<IDeviceTexture*>(loadData.m_pTexture);
-			if (m_SubstanceLibAPI->LoadTextureData(path, subData))
-			{
-				loadData.m_pData = subData.m_pData;
-				loadData.m_DataSize = subData.m_DataSize;
-				loadData.m_Width = subData.m_Width;
-				loadData.m_Height = subData.m_Height;
-				loadData.m_Format = SubstanceFormatToEngineFormat(subData.m_Format);
-				loadData.m_NumMips = subData.m_NumMips;
-				loadData.m_nFlags = (subData.m_bNormalMap) ? FT_TEX_NORMAL_MAP : 0;
-
-				return true;
-			}
+		XmlNodeRef texNode = GetISystem()->LoadXmlFromFile(resolvedPath.c_str());
+		if(!texNode) {
+			logERROR("Cannot load XML texture from file "<< resolvedPath.c_str());
+			return false;
 		}
+		
+		// read the smtl filename:
+		const char* smtl;
+		if (!texNode->getAttr("Material", &smtl))
+		{
+			logERROR("No material parameter for texture "<< resolvedPath.c_str());
+			return false;
+		}
+		
+		// Now load the substance material:
+		logDEBUG("Loading substance material from file: "<<smtl);
+		SubstanceMaterial smat(smtl);
+
+		// read the output id:
+		unsigned int id = 0;
+		if (!texNode->getAttr("OutputID", id))
+		{
+			logERROR("No output ID parameter for texture "<< resolvedPath.c_str());
+			return false;
+		}
+
+		logDEBUG("Generating output with ID: "<<id);
+		auto graph = (GraphInstance*)smat.GetGraphInstance(0);
+		auto out = (GraphOutput*)graph->GetOutputByID(id);
+
+		logDEBUG("Retrieved graph output with label: "<<out->GetLabel());
+
+		// Mark this output as dirty:
+		out->SetDirty(); 
+
+		// Okay, so now we retrieve the actual output instance:
+		auto inst = out->getInstance();
+
+		{
+			logDEBUG("Creating renderer...");
+			SubstanceAir::Renderer renderer;
+
+			auto ver = renderer.getCurrentVersion();
+			logDEBUG("Substance engine version: "<<ver.versionMajor<<"."
+				<<ver.versionMinor<<"."<< ver.versionPatch);
+
+			logDEBUG("Pushing graph instance");
+			renderer.push(*(graph->getInstance()));
+
+			logDEBUG("Render the output...");
+			unsigned int res = renderer.run();
+			logDEBUG("Render job UID = "<<res);
+
+		}
+		
+		// if (m_SubstanceLibAPI)
+		// {
+		// 	SSubstanceLoadData subData;
+
+		// 	memset(&subData, 0, sizeof(subData));
+		// 	subData.m_pTexture = reinterpret_cast<IDeviceTexture*>(loadData.m_pTexture);
+		// 	if (m_SubstanceLibAPI->LoadTextureData(path, subData))
+		// 	{
+		// 		loadData.m_pData = subData.m_pData;
+		// 		loadData.m_DataSize = subData.m_DataSize;
+		// 		loadData.m_Width = subData.m_Width;
+		// 		loadData.m_Height = subData.m_Height;
+		// 		loadData.m_Format = SubstanceFormatToEngineFormat(subData.m_Format);
+		// 		loadData.m_NumMips = subData.m_NumMips;
+		// 		loadData.m_nFlags = (subData.m_bNormalMap) ? FT_TEX_NORMAL_MAP : 0;
+
+		// 		return true;
+		// 	}
+		// }
 
 		return false;
 	}

@@ -13,6 +13,8 @@
 
 #if defined(USE_SUBSTANCE)
 
+class GraphInstance;
+
 /**/
 class SubstanceMaterial : public IProceduralMaterial
 {
@@ -52,7 +54,7 @@ protected:
 	SubstanceAir::PackageDesc* _package;
 
 	// map of graph instances:
-	typedef std::map<int, IGraphInstance*> GraphInstanceMap;
+	typedef std::map<int, GraphInstance*> GraphInstanceMap;
 	GraphInstanceMap _graphInstances;
 };
 
