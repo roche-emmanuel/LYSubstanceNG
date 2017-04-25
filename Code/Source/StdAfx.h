@@ -29,6 +29,8 @@
 #include <I3DEngine.h>
 #include <ISerialize.h>
 #include <IGem.h>
+#include <sstream>
+
 #define GEMSUBSTANCE_EXPORTS
 
 #if defined (GEMSUBSTANCE_EXPORTS)
@@ -69,6 +71,8 @@ AZStd::string string_format( const AZStd::string& format, Args ... args )
 //CVars
 extern int substance_coreCount;
 extern int substance_memoryBudget;
+
+AZStd::string getAbsoluteAssetPath(const AZStd::string& path);
 
 #define DIMOF(x) (sizeof(x)/sizeof(x[0]))
 #endif

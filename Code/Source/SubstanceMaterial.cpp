@@ -38,25 +38,9 @@ SubstanceMaterial::~SubstanceMaterial()
 
 void SubstanceMaterial::LoadMaterialFromXML()
 {
-	char rpath[AZ_MAX_PATH_LEN] = { 0 };
-    gEnv->pFileIO->ResolvePath(_smtlPath.c_str(), rpath, AZ_MAX_PATH_LEN);
+	auto resolvedPath = getAbsoluteAssetPath(_smtlPath);
 
-	string resolvedPath(rpath);
-	// string resolvedPath(_smtlPath.c_str());
-    if (gEnv->IsEditor())
-    {
-        // resolvedPath = "@assets@/" + string(_smtlPath.c_str());
-		const char* resultValue = nullptr;
-        EBUS_EVENT_RESULT(resultValue, AzToolsFramework::AssetSystemRequestBus, GetAbsoluteDevGameFolderPath);
-		if(!resultValue) {
-			AZ_TracePrintf("SubstanceGem", "No result from GetAbsoluteGameFolderPath()");
-			return;
-		}
-
-		resolvedPath = string(resultValue)+"/"+string(_smtlPath.c_str());
-    }
-
-	XmlNodeRef mtlNode = GetISystem()->LoadXmlFromFile(resolvedPath);
+	XmlNodeRef mtlNode = GetISystem()->LoadXmlFromFile(resolvedPath.c_str());
 	if(!mtlNode) {
 		AZ_TracePrintf("SubstanceGem", "ERROR: Cannot load material XML from file %s.", resolvedPath.c_str());
 		return;

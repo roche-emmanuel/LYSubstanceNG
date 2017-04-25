@@ -70,6 +70,8 @@ private:
 
 	bool LoadEngineLibrary();
 
+	void writeSubstanceTexture(const AZStd::string& basePath, const AZStd::string& fbase, const AZStd::string& otype, unsigned int id);
+
 	void*             m_SubstanceLib;
 	ISubstanceLibAPI* m_SubstanceLibAPI;
 	CSubstanceAPI     m_SubstanceAPI;

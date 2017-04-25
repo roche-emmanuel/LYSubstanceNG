@@ -16,4 +16,31 @@
 	@copyright Allegorithmic. All rights reserved.
 */
 #include "StdAfx.h"
+#include <AzCore/IO/SystemFile.h>
+#include <AzToolsFramework/API/EditorAssetSystemAPI.h>
 
+AZStd::string getAbsoluteAssetPath(const AZStd::string& src)
+{
+	AZStd::string resolvedPath;
+ 
+    if (gEnv->IsEditor())
+    {
+        // resolvedPath = "@assets@/" + string(_smtlPath.c_str());
+		const char* resultValue = nullptr;
+        EBUS_EVENT_RESULT(resultValue, AzToolsFramework::AssetSystemRequestBus, GetAbsoluteDevGameFolderPath);
+		if(!resultValue) {
+			logERROR("getAbsoluteAssetPath: no result from GetAbsoluteGameFolderPath()");
+			return AZStd::string();
+		}
+
+		resolvedPath = AZStd::string(resultValue)+"/"+src;
+    }
+	else {
+		char rpath[AZ_MAX_PATH_LEN] = { 0 };
+		gEnv->pFileIO->ResolvePath(src.c_str(), rpath, AZ_MAX_PATH_LEN);
+
+		resolvedPath = rpath;
+	}
+
+	return resolvedPath;
+}

@@ -76,6 +76,12 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 	{
 		logDEBUG("in LoadTextureData with path: "<<path);
 
+		// Read the XML file:
+		
+		logDEBUG("Creating substance material from "<<path);
+		SubstanceMaterial smat(path);
+
+
 		if (m_SubstanceLibAPI)
 		{
 			SSubstanceLoadData subData;
@@ -451,6 +457,8 @@ bool SubstanceGem::CreateProceduralMaterial(const char* basePath, const char* sb
 		if(!otype.empty()) {
 			// Add a line in the output content:
 			content += string_format("  <Output ID=\"%d\" Enabled=\"1\" Compressed=\"1\" File=\"%s_%s.sub\" />\n", out.mUid,fbase.c_str(),otype.c_str());
+
+			writeSubstanceTexture(basePath, fbase,otype, out.mUid );
 		}
 	}
 
@@ -481,6 +489,31 @@ bool SubstanceGem::CreateProceduralMaterial(const char* basePath, const char* sb
 
 	return true;
 	//return m_SubstanceLibAPI->CreateProceduralMaterial(sbsarPath, smtlPath);
+}
+
+void SubstanceGem::writeSubstanceTexture(const AZStd::string& basePath, const AZStd::string& fbase, const AZStd::string& otype, unsigned int id)
+{
+	// Open a file for writing:
+	AZ::IO::SystemFile file;
+
+	AZStd::string fullPath = basePath+AZStd::string("/")+fbase+"_"+otype+".sub";
+	bool res = file.Open(fullPath.c_str(),AZ::IO::SystemFile::SF_OPEN_WRITE_ONLY|AZ::IO::SystemFile::SF_OPEN_CREATE);
+	if(!res) {
+		logERROR("Cannot open file " << fullPath.c_str() << " for writing.");
+		return;
+	}
+
+	// prepare the content to write:
+	AZStd::string content = string_format("<ProceduralTexture Material=\"%s.smtl\" OutputID=\"%d\" />", fbase.c_str(), id);
+
+	auto rlen = file.Write(content.c_str(), content.size());
+	if(rlen != content.size()) {
+		logERROR("Did not write expected number of bytes: "<< rlen << " != " << content.size());
+		return;	
+	}
+
+	file.Close();
+	logDEBUG("Written substance texture file: " << fullPath.c_str());
 }
 
 bool SubstanceGem::SaveProceduralMaterial(IProceduralMaterial* pMaterial, const char* path)
