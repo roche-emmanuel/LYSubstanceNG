@@ -28,7 +28,8 @@
             "Include/Substance/texture.h",
             "Include/Substance/texturedesc.h",
             "Include/Substance/textureinput.h",
-            "Include/Substance/version.h"
+            "Include/Substance/version.h",
+            "Include/GraphInstance.h"
         ],
         "Source": [
             "Source/ProceduralFlowNodes.cpp",
@@ -39,7 +40,6 @@
             "Source/SubstanceGem.cpp",
             "Source/SubstanceMaterial.h",
             "Source/SubstanceMaterial.cpp",
-            "Source/GraphInstance.h",
             "Source/GraphInstance.cpp",
             "Source/GraphOutput.h",
             "Source/GraphOutput.cpp"

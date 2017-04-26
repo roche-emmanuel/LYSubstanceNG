@@ -39,6 +39,8 @@ struct IRenderMesh;
 #include "Util/Variable.h"
 #include "BaseLibrary.h"
 #include "Material/MaterialManager.h"
+#include "GraphInstance.h"
+#include <Substance/framework/renderer.h>
 
 static void QAlertMessageBox(const QString& caption, const QString& text)
 {
@@ -238,10 +240,23 @@ void QProceduralMaterialEditorMainWindow::OnEditorNotifyEvent(EEditorNotifyEvent
                     }
                 }
 
-                //render editor preview thumbnails
-                EBUS_EVENT(SubstanceRequestBus, QueueRender, m_QueueRenderGraph);
-                EBUS_EVENT_RESULT(m_RenderUID, SubstanceRequestBus, RenderEditorPreviewASync);
+                // Here we should request the rendering of our previews:
+                logDEBUG("Rendering outputs for preview...");
                 m_StatusBarProgress->setMaximum(0);
+                SubstanceAir::Renderer renderer;
+                auto graph = (GraphInstance*)m_QueueRenderGraph;
+                renderer.push(*(graph->getInstance()));
+
+                unsigned int res = renderer.run();
+                logDEBUG("Preview: render job UID = "<<res);
+                
+                // We should now update the output previews:
+                UpdateOutputPreviews();
+
+                //render editor preview thumbnails
+                // EBUS_EVENT(SubstanceRequestBus, QueueRender, m_QueueRenderGraph);
+                // EBUS_EVENT_RESULT(m_RenderUID, SubstanceRequestBus, RenderEditorPreviewASync);
+                // m_StatusBarProgress->setMaximum(0);
 
                 m_QueueRenderGraph = nullptr;
 
@@ -258,13 +273,13 @@ void QProceduralMaterialEditorMainWindow::OnEditorNotifyEvent(EEditorNotifyEvent
         }
         else
         {
-            bool hasRenderCompleted = false;
-            EBUS_EVENT_RESULT(hasRenderCompleted, SubstanceRequestBus, HasRenderCompleted, m_RenderUID);
-            if (hasRenderCompleted)
-            {
-                m_RenderUID = INVALID_PROCEDURALMATERIALRENDERUID;
-                UpdateOutputPreviews();
-            }
+            // bool hasRenderCompleted = false;
+            // EBUS_EVENT_RESULT(hasRenderCompleted, SubstanceRequestBus, HasRenderCompleted, m_RenderUID);
+            // if (hasRenderCompleted)
+            // {
+            //     m_RenderUID = INVALID_PROCEDURALMATERIALRENDERUID;
+            //     UpdateOutputPreviews();
+            // }
         }
     }
     break;

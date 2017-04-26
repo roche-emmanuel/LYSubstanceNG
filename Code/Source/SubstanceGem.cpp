@@ -75,6 +75,31 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 		}
 	}
 
+	ETEX_Format SubstanceToEngineFormat(int substanceFormat) const
+	{
+		switch (substanceFormat)
+		{
+		case Substance_PF_RGBA|Substance_PF_16b:	return eTF_R16G16B16A16;
+		case Substance_PF_RGBA:						return eTF_R8G8B8A8;
+		case Substance_PF_L:						return eTF_L8;
+		default:
+			logERROR("Unsupported substance pixel format: "<<(int)substanceFormat);
+			return eTF_Unknown;
+		}
+	}
+
+	int GetPixelSize(int substanceFormat) const {
+		switch (substanceFormat)
+		{
+		case Substance_PF_RGBA|Substance_PF_16b:	return 8;
+		case Substance_PF_RGBA:						return 4;
+		case Substance_PF_L:						return 1;
+		default:
+			logERROR("Unsupported substance pixel format: "<<(int)substanceFormat);
+			return 1;
+		}
+	}
+
 	virtual bool LoadTextureData(const char* path, STextureLoadData& loadData) override
 	{
 		logDEBUG("in LoadTextureData with path: "<<path);
@@ -137,6 +162,47 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 			unsigned int res = renderer.run();
 			logDEBUG("Render job UID = "<<res);
 
+			//  So now we should be able to grab our result:
+			auto result = inst->grabResult();
+			if(!result) {
+				logERROR("Invalid result!")
+			}
+			else {
+				auto stex = result->getTexture();
+				logDEBUG("MipmapCount="<< (int)stex.mipmapCount);
+				logDEBUG("Width="<< (int)stex.level0Width);
+				logDEBUG("Height="<< (int)stex.level0Height);
+				logDEBUG("PixelFormat="<< (int)stex.pixelFormat);
+				logDEBUG("ChannelsOrder="<< (int)stex.channelsOrder);
+
+				loadData.m_DataSize = 0;
+				int num = (int)stex.mipmapCount;
+				int div = 1;
+				for(int i=0;i<num;++i) {
+					int ww = (int)stex.level0Width/div;
+					int hh = (int)stex.level0Height/div;
+					div *= 2;
+					loadData.m_DataSize += ww*hh;
+				}
+
+				// Retrieve the pixel size:
+				loadData.m_DataSize *= GetPixelSize((int)stex.pixelFormat);
+
+				loadData.m_Width = (int)stex.level0Width;
+				loadData.m_Height = (int)stex.level0Height;
+				loadData.m_NumMips = (int)stex.mipmapCount;
+				loadData.m_nFlags = out->GetChannel()==GraphOutputChannel::Normal ? FT_TEX_NORMAL_MAP : 0;
+				loadData.m_Format = SubstanceToEngineFormat((int)stex.pixelFormat);
+
+				if((int)stex.channelsOrder != 0) {
+					logERROR("Unexpected channel order: "<<(int)stex.channelsOrder);
+				}
+				
+				loadData.m_pData = new char[loadData.m_DataSize];
+				memcpy(loadData.m_pData, stex.buffer, loadData.m_DataSize);
+
+				return true;
+			}
 		}
 		
 		// if (m_SubstanceLibAPI)
