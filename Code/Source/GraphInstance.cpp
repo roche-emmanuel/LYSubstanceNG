@@ -10,6 +10,7 @@
 #if defined(USE_SUBSTANCE)
 #include "GraphInstance.h"
 #include "GraphOutput.h"
+#include "GraphInput.h"
 #include "SubstanceMaterial.h"
 #include <AzCore/IO/SystemFile.h>
 
@@ -32,6 +33,11 @@ GraphInstance::GraphInstance(SubstanceMaterial* parent, int idx) :
 		// Create a new output object:
 		_outputs.push_back(new GraphOutput(this, out->mDesc.mUid));
 	}
+	// Init the inputs:
+	for(auto& in: _instance->getInputs()) {
+		// Create a new output object:
+		_inputs.push_back(new GraphInput(this, in->mDesc.mUid));
+	}
 }
 
 GraphInstance::~GraphInstance()
@@ -42,6 +48,10 @@ GraphInstance::~GraphInstance()
 		delete out;
 	}
 	_outputs.clear();
+	for(auto& in: _inputs) {
+		delete in;
+	}
+	_inputs.clear();
 	
 	if(_instance) {
 		delete _instance;
@@ -66,40 +76,43 @@ GraphInstanceID GraphInstance::GetGraphInstanceID() const
 
 int GraphInstance::GetInputCount() const
 {
-	AZ_TracePrintf("GraphInstance", "GetInputCount == 0");
-	// Number of inputs:
-	// return _instance->getInputs().size();
-	return 0;
+	int num = _instance->getInputs().size();
+	logDEBUG("GraphInstance: GetInputCount = "<<num);
+	return num;
 }
 
 IGraphInput* GraphInstance::GetInput(int index)
 {
-	AZ_TracePrintf("GraphInstance", "GetInput: %d", index);
-	return nullptr;
-
-	// return _instance->getInputs()[index];
+	logDEBUG("GraphInstance: GetInput: "<< index);
+	return _inputs[index];
 }
 
 IGraphInput* GraphInstance::GetInputByName(const char* name)
 {
-	AZ_TracePrintf("GraphInstance", "GetInputByName: %s", name);
-	return nullptr;
+	logDEBUG("GraphInstance: GetInputByName: "<< name);
 
-	// for(auto& in: _instance->GetInputs()) {
-	// 	if(in->mDesc.mIdentifier == name) {
-	// 		return 
-	// 	}
-	// }
+	AZStd::string str(name);
+
+	for(auto& in: _inputs) {
+		if(str == in->GetName()) {
+			return in;
+		}
+	}
+
+	return nullptr;
 }
 
 IGraphInput* GraphInstance::GetInputByID(GraphInputID inputID)
 {
-	AZ_TracePrintf("GraphInstance", "GetInputByID: %d", (int)inputID);
-	return nullptr;
+	logDEBUG("GraphInstance: GetInputByID: "<< (int)inputID);
 
-	// for(auto& in: _instance->GetInputs()) {
-	// 	in->mDesc.mUid 
-	// }
+	for(auto& in: _inputs) {
+		if(inputID == in->GetGraphInputID()) {
+			return in;
+		}
+	}
+
+	return nullptr;
 }
 
 int GraphInstance::GetOutputCount() const

@@ -42,7 +42,9 @@
             "Source/SubstanceMaterial.cpp",
             "Source/GraphInstance.cpp",
             "Source/GraphOutput.h",
-            "Source/GraphOutput.cpp"
+            "Source/GraphOutput.cpp",
+            "Source/GraphInput.h",
+            "Source/GraphInput.cpp"
         ]
     }
 }

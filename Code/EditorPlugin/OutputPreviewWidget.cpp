@@ -21,6 +21,7 @@
 
 #include "OutputPreviewWidget.h"
 #include "QProceduralMaterialEditorMainWindow.h"
+#include <I3DEngine.h>
 
 static const int PREVIEW_WIDGET_SIZE_SCALAR = 145;
 static const QSize PREVIEW_WIDGET_SIZE(PREVIEW_WIDGET_SIZE_SCALAR, PREVIEW_WIDGET_SIZE_SCALAR);
@@ -128,19 +129,54 @@ void QOutputPreviewWidget::OnOutputChanged()
 	{
 		m_PreviewImage = QImage(preview.Width, preview.Height, QImage::Format_RGB32);
 
+		uchar pR, pG, pB;
+		unsigned short* sptr;
+
+		logDEBUG("Loading preview for "<< m_Output->GetLabel()<<" of size "<<preview.Width<<"x"<<preview.Height<<", with format: "<<preview.Format<<", bytesPerPixel: "<<preview.BytesPerPixel);
+
+		// This conversion below assumes that we have BGR data,
+		// But this is not the case any more, so this should be ignored.
 		for (int y = 0;y < preview.Height;y++)
 		{
 			QRgb* pScanline = (QRgb*)m_PreviewImage.scanLine(y);
 
 			for (int x = 0; x < preview.Width;x++)
 			{
-				uchar* psB = (uchar*)(preview.Data) + (x*preview.BytesPerPixel) + (y*preview.BytesPerPixel*preview.Width);
-				uchar* psG = psB + 1;
-				uchar* psR = psG + 1;
+				uchar* base = (uchar*)(preview.Data) + (x*preview.BytesPerPixel) + (y*preview.BytesPerPixel*preview.Width);
+				switch(preview.Format) {
+				case eTF_R16:
+					sptr = (unsigned short*)base;
+					pR = (uchar)(255.0*sptr[0]/65535.0);
+					pG = pR;
+					pB = pR;
+					break;
+				case eTF_R16G16B16A16:
+					sptr = (unsigned short*)base;
+					pR = (uchar)(255.0*sptr[0]/65535.0);
+					pG = (uchar)(255.0*sptr[1]/65535.0);
+					pB = (uchar)(255.0*sptr[2]/65535.0);
+					break;
+				case eTF_R8G8B8A8:
+					pR = base[0];
+					pG = base[1];
+					pB = base[2];
+					break;
+				case eTF_L8:
+					pR = base[0];
+					pG = base[1];
+					pB = base[2];
+					break;
+				}
+				// uchar* psR = (uchar*)(preview.Data) + (x*preview.BytesPerPixel) + (y*preview.BytesPerPixel*preview.Width);
+				// uchar* psG = psR + 1;
+				// uchar* psB = psG + 1;
 
-				*(pScanline + x) = qRgb(*psR, *psG, *psB);
+				// *(pScanline + x) = qRgb(*psR, *psG, *psB);
+				*(pScanline + x) = qRgb(pR, pG, pB);
 			}
 		}
+
+		logDEBUG("Done loading preview for "<< m_Output->GetLabel());
 
 		QPixmap pixMap = QPixmap::fromImage(m_PreviewImage);
 		pixMap = pixMap.scaled(PREVIEW_WIDGET_SIZE, Qt::KeepAspectRatio);

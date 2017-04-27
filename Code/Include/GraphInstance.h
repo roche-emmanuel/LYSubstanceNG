@@ -16,6 +16,7 @@
 class SubstanceMaterial;
 
 class GraphOutput;
+class GraphInput;
 
 /**/
 class GraphInstance : public IGraphInstance
@@ -70,6 +71,10 @@ protected:
 	// List of graph outputs:
 	typedef std::vector<GraphOutput*> GraphOutputList;
 	GraphOutputList _outputs;
+
+	// List of graph inputs:
+	typedef std::vector<GraphInput*> GraphInputList;
+	GraphInputList _inputs;
 };
 
 #endif // USE_SUBSTANCE

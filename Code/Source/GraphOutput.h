@@ -55,6 +55,12 @@ public:
 	/// Retrieve the output instance:
 	inline SubstanceAir::OutputInstance* getInstance() const { return _instance; }
 
+	/// Retrieve number of bytes per pixel:
+	int GetBytesPerPixel(int format) const;
+
+	/// Retrieve the engine format:
+	ETEX_Format GetEngineFormat(int format) const;
+
 protected:
 	// Pointer on the parent graph instance:
 	GraphInstance* _parent;

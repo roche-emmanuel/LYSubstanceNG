@@ -111,16 +111,17 @@ struct IGraphInstance
 /**/
 enum class GraphInputType
 {
-	None,
-	Float1,
-	Float2,
-	Float3,
-	Float4,
-	Integer1,
-	Integer2,
-	Integer3,
-	Integer4,
-	Image
+	Float1		= 0x0,
+	Float2		= 0x1,
+	Float3		= 0x2,
+	Float4		= 0x3,
+	Integer1	= 0x4,
+	Integer2	= 0x8,
+	Integer3	= 0x9,
+	Integer4	= 0xA,
+	Image		= 0x5,
+	String		= 0x6,
+	Font		= 0x7
 };
 
 /**/
@@ -131,7 +132,8 @@ enum class GraphInputWidgetType
 	Angle,
 	Color,
 	Boolean,
-	Combobox
+	Combobox,
+	Image
 };
 
 /**/
@@ -252,6 +254,8 @@ struct SGraphOutputEditorPreview
 	int		Width;
 	int		Height;
 	int		BytesPerPixel;
+	int		Format;
+	int     ChannelOrder;
 	void*	Data;
 };
 

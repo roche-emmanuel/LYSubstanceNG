@@ -96,10 +96,66 @@ void GraphOutput::SetDirty()
 	_instance->flagAsDirty();
 }
 
+int GraphOutput::GetBytesPerPixel(int format) const
+{
+	switch (format)
+	{
+	case Substance_PF_RGBA|Substance_PF_16b:					return 8;
+	case Substance_PF_RGBx|Substance_PF_16b:					return 8;
+	case Substance_PF_L|Substance_PF_16b:						return 2;
+	case Substance_PF_RGBA:										return 4;
+	case Substance_PF_L:										return 1;
+	default:
+		logERROR("Unsupported substance pixel format: "<<format);
+		return 1;
+	}
+}
+
+ETEX_Format GraphOutput::GetEngineFormat(int format) const
+{
+	switch (format)
+	{
+	case Substance_PF_RGBx|Substance_PF_16b:	
+		return eTF_R16G16B16A16;	
+	case Substance_PF_L|Substance_PF_16b:
+		return eTF_R16;
+	case Substance_PF_RGBA|Substance_PF_16b:
+		return eTF_R16G16B16A16;
+	case Substance_PF_RGBA:
+		return eTF_R8G8B8A8;
+	case Substance_PF_L:
+		return eTF_L8;
+	default:
+		logERROR("Unsupported substance pixel format: "<<(int)format);
+		return eTF_Unknown;
+	}
+}
+
 bool GraphOutput::GetEditorPreview(SGraphOutputEditorPreview& preview)
 {
-	logDEBUG("Trying to generate Output preview for id "<<(int)_id);
-	return false;
+	// We grab the output here and copy it into the preview structure:
+	auto result = _instance->grabResult();
+	if(!result) {
+		logERROR("Invalid result in GetEditorPreview()");
+		return false;
+	}
+
+	// Assign the data:
+	auto stex = result->getTexture();
+	logDEBUG("MipmapCount="<< (int)stex.mipmapCount);
+	logDEBUG("Width="<< (int)stex.level0Width);
+	logDEBUG("Height="<< (int)stex.level0Height);
+	logDEBUG("PixelFormat="<< (int)stex.pixelFormat);
+	logDEBUG("ChannelsOrder="<< (int)stex.channelsOrder);
+
+	preview.Width = (int)stex.level0Width;
+	preview.Height = (int)stex.level0Height;
+	preview.BytesPerPixel = GetBytesPerPixel((int)stex.pixelFormat);
+	preview.Data = stex.buffer;
+	preview.Format = GetEngineFormat((int)stex.pixelFormat);
+	preview.ChannelOrder = (int)stex.channelsOrder;
+
+	return true;
 }
 
 GraphOutputChannel GraphOutput::GetChannel() const
