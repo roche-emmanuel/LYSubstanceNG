@@ -344,19 +344,44 @@ void QProceduralMaterialEditorMainWindow::OnFileImportSubstanceTriggered()
         //re-issue file scan
         CProceduralMaterialScanner::Instance()->StartScan();
 
-        pMaterial = nullptr;
-        EBUS_EVENT_RESULT(pMaterial, SubstanceRequestBus, GetMaterialFromPath, smtlFile.c_str(), true);
-        if (pMaterial)
-        {
-            CreateMaterial(pMaterial);
-        }
-        else
-        {
-            QMessageBox msgBox;
-            msgBox.setText(tr("Failed to create Substance Material"));
-            msgBox.exec();
-            return;
-        }
+        // Create the material:
+        CreateMaterialFromPath(smtlFile.c_str());
+
+        // pMaterial = nullptr;
+        // EBUS_EVENT_RESULT(pMaterial, SubstanceRequestBus, GetMaterialFromPath, smtlFile.c_str(), true);
+        // if (pMaterial)
+        // {
+        //     CreateMaterial(pMaterial);
+        // }
+        // else
+        // {
+        //     QMessageBox msgBox;
+        //     msgBox.setText(tr("Failed to create Substance Material"));
+        //     msgBox.exec();
+        //     return;
+        // }
+    }
+}
+
+void QProceduralMaterialEditorMainWindow::CreateMaterialFromPath(const char* path)
+{
+    //re-issue file scan
+    CProceduralMaterialScanner::Instance()->StartScan();
+
+    IProceduralMaterial* pMaterial = nullptr;
+    EBUS_EVENT_RESULT(pMaterial, SubstanceRequestBus, GetMaterialFromPath, path, true);
+    if (pMaterial)
+    {
+        CreateMaterial(pMaterial);
+        // Delete the material interface:
+        delete pMaterial;
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Failed to create Substance Material"));
+        msgBox.exec();
+        return;
     }
 }
 
@@ -578,12 +603,16 @@ void QProceduralMaterialEditorMainWindow::OnFileSave()
     if (m_CurrentMaterial)
     {
         bool saved = false;
-        EBUS_EVENT_RESULT(saved, SubstanceRequestBus, SaveProceduralMaterial, m_CurrentMaterial, nullptr);
+        AZStd::string basePath = Path::GetEditingGameDataFolder().c_str();
+
+        EBUS_EVENT_RESULT(saved, SubstanceRequestBus, SaveProceduralMaterial, m_CurrentMaterial, basePath.c_str(), nullptr);
         if (!saved)
         {
             QAlertMessageBox(tr("Failed to save Substance"), tr("Failed to save Substance"));
             return;
         }
+
+        CreateMaterialFromPath(m_CurrentMaterial->GetPath());
 
         //reset asterisk
         m_MaterialModifiedCountMap[m_CurrentMaterial] = 0;
@@ -617,7 +646,9 @@ void QProceduralMaterialEditorMainWindow::OnFileSaveAs()
         std::string stdSmtlFile = smtlFile.toStdString();
 
         bool saved = false;
-        EBUS_EVENT_RESULT(saved, SubstanceRequestBus, SaveProceduralMaterial, m_CurrentMaterial, stdSmtlFile.c_str());
+        AZStd::string basePath = Path::GetEditingGameDataFolder().c_str();
+
+        EBUS_EVENT_RESULT(saved, SubstanceRequestBus, SaveProceduralMaterial, m_CurrentMaterial, basePath.c_str(), stdSmtlFile.c_str());
         if (!saved)
         {
             QMessageBox msgBox;
@@ -625,6 +656,8 @@ void QProceduralMaterialEditorMainWindow::OnFileSaveAs()
             msgBox.exec();
             return;
         }
+
+        CreateMaterialFromPath(stdSmtlFile.c_str());
 
         //re-issue file scan
         CProceduralMaterialScanner::Instance()->StartScan();

@@ -59,7 +59,7 @@ public:
 	virtual void RenderEditorPreviewSync() override;
 
 	virtual bool CreateProceduralMaterial(const char* basePath, const char* sbsarPath, const char* smtlPath) override;
-	virtual bool SaveProceduralMaterial(IProceduralMaterial* pMaterial, const char* path) override;
+	virtual bool SaveProceduralMaterial(IProceduralMaterial* pMaterial, const char* basePath, const char* path) override;
 	virtual void RemoveProceduralMaterial(IProceduralMaterial* pMaterial) override;
 
 	virtual ISubstanceLibAPI* GetSubstanceLibAPI() const override;

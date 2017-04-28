@@ -10,6 +10,7 @@
 #if defined(USE_SUBSTANCE)
 #include "SubstanceMaterial.h"
 #include "GraphInstance.h"
+#include "GraphOutput.h"
 #include <AzCore/IO/SystemFile.h>
 #include <AzToolsFramework/API/EditorAssetSystemAPI.h>
 
@@ -157,6 +158,104 @@ void SubstanceMaterial::LoadMaterialFromXML()
 			}
 		}
 	}
+}
+
+void SubstanceMaterial::writeSubstanceTexture(const AZStd::string& basePath, const AZStd::string& fbase, const AZStd::string& otype, unsigned int id)
+{
+	// Open a file for writing:
+	AZ::IO::SystemFile file;
+
+	AZStd::string fullPath = basePath+AZStd::string("/")+fbase+"_"+otype+".sub";
+	bool res = file.Open(fullPath.c_str(),AZ::IO::SystemFile::SF_OPEN_WRITE_ONLY|AZ::IO::SystemFile::SF_OPEN_CREATE);
+	if(!res) {
+		logERROR("Cannot open file " << fullPath.c_str() << " for writing.");
+		return;
+	}
+
+	// prepare the content to write:
+	AZStd::string content = string_format("<ProceduralTexture Material=\"%s.smtl\" OutputID=\"%d\" />", fbase.c_str(), id);
+
+	auto rlen = file.Write(content.c_str(), content.size());
+	if(rlen != content.size()) {
+		logERROR("Did not write expected number of bytes: "<< rlen << " != " << content.size());
+		return;	
+	}
+
+	file.Close();
+	logDEBUG("Written substance texture file: " << fullPath.c_str());
+}
+
+bool SubstanceMaterial::save(const char* basePath, const char* path)
+{
+	// Prepare the content to save:
+	AZStd::string content = string_format("<ProceduralMaterial Source=\"%s\">\n", GetSourcePath());
+	
+	// List the output IDs and usage:
+	AZStd::string smtlPath = GetPath();
+	if(path) {
+		smtlPath = path;
+	}
+
+	AZStd::string fbase = smtlPath;
+	fbase = fbase.substr(0,fbase.size()-5);
+
+	// iterate on all the graphs:
+	int ng = GetGraphInstanceCount();
+	for(int i = 0; i<ng; ++i) {
+		GraphInstance* graph = (GraphInstance*)GetGraphInstance(i);
+		int nout = graph->GetOutputCount();
+		for(int j=0; j<nout; ++j) {
+			GraphOutput* out = (GraphOutput*)graph->GetOutput(j);
+			AZStd::string otype = "";
+			switch(out->GetChannel()) {
+			case SubstanceAir::Channel_Diffuse: 
+				otype = "diffuse"; break;
+			case SubstanceAir::Channel_Normal: 
+				otype = "normal"; break;
+			case SubstanceAir::Channel_Specular: 
+				otype = "specular"; break;
+			case SubstanceAir::Channel_Emissive: 
+				otype = "emittance"; break;
+			case SubstanceAir::Channel_Height: 
+				otype = "height"; break;
+			default:
+				AZ_TracePrintf("SubstanceGem", "Ignoring output of type %d.", (int)out->GetChannel());
+				break;
+			}
+			if(!otype.empty()) {
+				// Add a line in the output content:
+				content += string_format("  <Output ID=\"%d\" Enabled=\"1\" Compressed=\"1\" File=\"%s_%s.sub\" />\n", (unsigned int)out->GetGraphOutputID(),fbase.c_str(),otype.c_str());
+
+				writeSubstanceTexture(basePath, fbase, otype, out->GetGraphOutputID());
+			}
+		}
+	}
+
+	// Todo: handle the input parameters here too.
+
+	// close the parent tag:
+	content += "</ProceduralMaterial>\n";
+
+	// Use the default path is non is provided:
+
+	AZ::IO::SystemFile file;
+	AZStd::string fullPath = basePath+AZStd::string("/")+AZStd::string(smtlPath);
+	bool res = file.Open(fullPath.c_str(),AZ::IO::SystemFile::SF_OPEN_WRITE_ONLY|AZ::IO::SystemFile::SF_OPEN_CREATE);
+	if(!res) {
+		logERROR("Cannot open file %s for writing."<< fullPath.c_str());
+		return false;
+	}
+
+	auto rlen = file.Write(content.c_str(), content.size());
+	if(rlen != content.size()) {
+		logERROR("Did not write expected number of bytes: "<< rlen<<" != "<< content.size());
+		return false;	
+	}
+
+	file.Close();
+
+	logDEBUG("ProceduralMaterial saved to file: "<<fullPath.c_str());
+	return true;
 }
 
 bool SubstanceMaterial::getDefaultInputValue(const AZStd::string& key, GraphValueVariant& val)

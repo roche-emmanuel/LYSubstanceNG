@@ -43,6 +43,12 @@ public:
 	// Retrieve a default input value:
 	bool getDefaultInputValue(const AZStd::string& key, GraphValueVariant& val);
 
+	// Save this material to file:
+	bool save(const char* basePath, const char* path);
+
+	// Write substance base path:
+	void writeSubstanceTexture(const AZStd::string& basePath, const AZStd::string& fbase, const AZStd::string& otype, unsigned int id);
+
 protected:
 	// Helper method used to load the data from XML:
 	void LoadMaterialFromXML();

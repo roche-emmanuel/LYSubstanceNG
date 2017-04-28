@@ -82,6 +82,7 @@ private:
 	void AddSingleLabel(QWidget* widget, const QString& text);
 	void AddGraphInputWidgets(IGraphInput* input, QFormLayout* layout);
 	void CreateMaterial(IProceduralMaterial* pProcMaterial);
+	void CreateMaterialFromPath(const char* path);
 	void CreateOutputPreviews(int graphIndex);
 	void DisplayProceduralMaterial(const char* path);
 	void UpdateOutputPreviews();

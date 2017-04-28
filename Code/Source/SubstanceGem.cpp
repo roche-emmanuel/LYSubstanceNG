@@ -573,9 +573,13 @@ void SubstanceGem::writeSubstanceTexture(const AZStd::string& basePath, const AZ
 	logDEBUG("Written substance texture file: " << fullPath.c_str());
 }
 
-bool SubstanceGem::SaveProceduralMaterial(IProceduralMaterial* pMaterial, const char* path)
+bool SubstanceGem::SaveProceduralMaterial(IProceduralMaterial* pMaterial, const char* basePath, const char* path)
 {
-	return m_SubstanceLibAPI->SaveProceduralMaterial(pMaterial, path);
+	// Save the Procedural material with its current input values:
+	SubstanceMaterial* mat = (SubstanceMaterial*)pMaterial;
+	return mat->save(basePath, path);
+
+	// return m_SubstanceLibAPI->SaveProceduralMaterial(pMaterial, path);
 }
 
 void SubstanceGem::RemoveProceduralMaterial(IProceduralMaterial* pMaterial)

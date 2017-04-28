@@ -28,8 +28,8 @@ GraphOutput::GraphOutput(GraphInstance* parent, GraphOutputID id) :
 	}
 
 	// use the sbsar path and add the proper ending to the path:
-	AZStd::string fbase = _parent->GetProceduralMaterial()->GetSourcePath();
-	fbase = fbase.substr(0,fbase.size()-6);
+	AZStd::string fbase = _parent->GetProceduralMaterial()->GetPath();
+	fbase = fbase.substr(0,fbase.size()-5);
 
 	AZStd::string otype = "";
 	switch(_instance->mDesc.mChannel) {

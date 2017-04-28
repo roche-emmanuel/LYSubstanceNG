@@ -73,7 +73,7 @@ public:
 	virtual bool CreateProceduralMaterial(const char* basePath, const char* sbsarPath, const char* smtlPath) = 0;
 
 	/// Save an existing procedural material to disk, serializing all property changes.
-	virtual bool SaveProceduralMaterial(IProceduralMaterial* pMaterial, const char* path = nullptr) = 0;
+	virtual bool SaveProceduralMaterial(IProceduralMaterial* pMaterial, const char* basePath, const char* path = nullptr) = 0;
 
 	/// Remove a procedural material from disk
 	virtual void RemoveProceduralMaterial(IProceduralMaterial* pMaterial) = 0;
