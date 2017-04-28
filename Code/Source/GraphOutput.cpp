@@ -39,6 +39,8 @@ GraphOutput::GraphOutput(GraphInstance* parent, GraphOutputID id) :
 		otype = "normal"; break;
 	case SubstanceAir::Channel_Specular: 
 		otype = "specular"; break;
+	case SubstanceAir::Channel_Emissive: 
+		otype = "emittance"; break;
 	case SubstanceAir::Channel_Height: 
 		otype = "height"; break;
 	default:

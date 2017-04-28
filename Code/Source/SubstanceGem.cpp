@@ -280,6 +280,7 @@ bool SubstanceGem::LoadEngineLibrary()
 			return LoadEngineLibrary();
 		}
 
+		// We should not need to load any external substance API here:
 		//moment of truth
 		if (m_SubstanceLib != nullptr)
 		{
@@ -546,6 +547,8 @@ bool SubstanceGem::CreateProceduralMaterial(const char* basePath, const char* sb
 			otype = "normal"; break;
 		case SubstanceAir::Channel_Specular: 
 			otype = "specular"; break;
+		case SubstanceAir::Channel_Emissive: 
+			otype = "emittance"; break;
 		case SubstanceAir::Channel_Height: 
 			otype = "height"; break;
 		default:
