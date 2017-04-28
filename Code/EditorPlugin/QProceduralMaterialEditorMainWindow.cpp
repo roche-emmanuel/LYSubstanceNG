@@ -346,20 +346,6 @@ void QProceduralMaterialEditorMainWindow::OnFileImportSubstanceTriggered()
 
         // Create the material:
         CreateMaterialFromPath(smtlFile.c_str());
-
-        // pMaterial = nullptr;
-        // EBUS_EVENT_RESULT(pMaterial, SubstanceRequestBus, GetMaterialFromPath, smtlFile.c_str(), true);
-        // if (pMaterial)
-        // {
-        //     CreateMaterial(pMaterial);
-        // }
-        // else
-        // {
-        //     QMessageBox msgBox;
-        //     msgBox.setText(tr("Failed to create Substance Material"));
-        //     msgBox.exec();
-        //     return;
-        // }
     }
 }
 
@@ -693,8 +679,20 @@ void QProceduralMaterialEditorMainWindow::CreateMaterial(IProceduralMaterial* pP
 
         mtlPath = mtlPath + string(".mtl");
 
-        if (CMaterial* pEditorMaterial = GetIEditor()->GetMaterialManager()->CreateMaterial(mtlPath.c_str()))
-        {
+        // Check if we already have a material with this name:
+        auto matman = GetIEditor()->GetMaterialManager();
+        logDEBUG("Looking for material with name: "<<mtlPath.c_str());
+
+        CMaterial* pEditorMaterial = matman->LoadMaterial(mtlPath.c_str(), false);
+        if(!pEditorMaterial) {
+            logDEBUG("Creating material: "<<mtlPath.c_str());
+            pEditorMaterial = matman->CreateMaterial(mtlPath.c_str());
+            
+            if(!pEditorMaterial) {
+                logERROR("Cannot create material "<<mtlPath.c_str());
+                return;
+            }
+
             pEditorMaterial->SetSurfaceTypeName("mat_invulnerable");
 
             SInputShaderResources& shaderResources = pEditorMaterial->GetShaderResources();
@@ -738,6 +736,9 @@ void QProceduralMaterialEditorMainWindow::CreateMaterial(IProceduralMaterial* pP
             //save changes
             pEditorMaterial->Update();
             pEditorMaterial->Save();
+        }
+        else {            
+            pEditorMaterial->Update();
         }
     }
 }
