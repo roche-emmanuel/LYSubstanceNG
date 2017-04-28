@@ -142,4 +142,9 @@ IGraphOutput* GraphInstance::GetOutputByID(GraphOutputID outputID)
 	return nullptr;
 }
 
+bool GraphInstance::getDefaultInputValue(unsigned int id, GraphValueVariant& val)
+{
+	return _parent->getDefaultInputValue(string_format("%d_%d",_index, id), val);
+}
+
 #endif // USE_SUBSTANCE

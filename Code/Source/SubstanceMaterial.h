@@ -40,6 +40,9 @@ public:
 	// Retrieve the package from this material:
 	SubstanceAir::PackageDesc* getPackage() const { return _package; }
 
+	// Retrieve a default input value:
+	bool getDefaultInputValue(const AZStd::string& key, GraphValueVariant& val);
+
 protected:
 	// Helper method used to load the data from XML:
 	void LoadMaterialFromXML();
@@ -56,6 +59,9 @@ protected:
 	// map of graph instances:
 	typedef std::map<int, GraphInstance*> GraphInstanceMap;
 	GraphInstanceMap _graphInstances;
+
+	typedef std::map<AZStd::string, GraphValueVariant> ValueMap;
+	ValueMap _defValues;
 };
 
 #endif // USE_SUBSTANCE

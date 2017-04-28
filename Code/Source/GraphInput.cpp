@@ -28,6 +28,12 @@ GraphInput::GraphInput(::GraphInstance* parent, unsigned int id) :
 		logERROR("Cannot find input with ID=%d"<< id);
 		return;
 	}
+
+	// Once the instance is created we should retrieve its default value from the SubstanceMaterial:
+	GraphValueVariant val;
+	if(parent->getDefaultInputValue(id, val)) {
+		SetValue(val);
+	}
 }
 
 GraphInput::~GraphInput()

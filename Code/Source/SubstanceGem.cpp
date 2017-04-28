@@ -44,7 +44,7 @@ static const char* kSubstance_EngineLibrary_Default = "sse2";
 //////////////////////////////////////////////////////////////////////////
 struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 {
-	CTextureLoadHandler_Substance(ISubstanceLibAPI* pAPI) : m_SubstanceLibAPI(pAPI)
+	CTextureLoadHandler_Substance()
 	{
 	}
 
@@ -56,23 +56,6 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 		}
 
 		return false;
-	}
-
-	ETEX_Format SubstanceFormatToEngineFormat(SubstanceTexFormat substanceFormat) const
-	{
-		switch (substanceFormat)
-		{
-		case SubstanceTex_BC1:				return eTF_BC1;
-		case SubstanceTex_BC2:				return eTF_BC2;
-		case SubstanceTex_BC3:				return eTF_BC3;
-		case SubstanceTex_L8:				return eTF_L8;
-		case SubstanceTex_PVRTC2:			return eTF_PVRTC2;
-		case SubstanceTex_PVRTC4:			return eTF_PVRTC4;	
-		case SubstanceTex_R8G8B8A8:			return eTF_R8G8B8A8;
-		case SubstanceTex_R16G16B16A16:		return eTF_R16G16B16A16;
-		default:
-			return eTF_Unknown;
-		}
 	}
 
 	virtual bool LoadTextureData(const char* path, STextureLoadData& loadData) override
@@ -179,41 +162,14 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 				return true;
 			}
 		}
-		
-		// if (m_SubstanceLibAPI)
-		// {
-		// 	SSubstanceLoadData subData;
-
-		// 	memset(&subData, 0, sizeof(subData));
-		// 	subData.m_pTexture = reinterpret_cast<IDeviceTexture*>(loadData.m_pTexture);
-		// 	if (m_SubstanceLibAPI->LoadTextureData(path, subData))
-		// 	{
-		// 		loadData.m_pData = subData.m_pData;
-		// 		loadData.m_DataSize = subData.m_DataSize;
-		// 		loadData.m_Width = subData.m_Width;
-		// 		loadData.m_Height = subData.m_Height;
-		// 		loadData.m_Format = SubstanceFormatToEngineFormat(subData.m_Format);
-		// 		loadData.m_NumMips = subData.m_NumMips;
-		// 		loadData.m_nFlags = (subData.m_bNormalMap) ? FT_TEX_NORMAL_MAP : 0;
-
-		// 		return true;
-		// 	}
-		// }
 
 		return false;
 	}
 
 	virtual void Update() override
 	{
-		// logDEBUG("in CTextureLoadHandler_Substance::Update()");
-		if (m_SubstanceLibAPI)
-		{
-			m_SubstanceLibAPI->Update();
-		}
+		// No op.
 	}
-
-private:
-	ISubstanceLibAPI* m_SubstanceLibAPI;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -315,7 +271,7 @@ void SubstanceGem::RegisterTextureHandler()
 	if (I3DEngine* p3DEngine = gEnv->p3DEngine)
 	{
 		logDEBUG("Registering Substance texture loader.");
-		m_TextureLoadHandler = new CTextureLoadHandler_Substance(m_SubstanceLibAPI);
+		m_TextureLoadHandler = new CTextureLoadHandler_Substance();
 		p3DEngine->AddTextureLoadHandler(m_TextureLoadHandler);
 	}
 }

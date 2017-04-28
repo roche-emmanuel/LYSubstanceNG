@@ -58,6 +58,9 @@ public:
 	//! Retrieve the substance graph instance:
 	inline SubstanceAir::GraphInstance* getInstance() const { return _instance; }
 
+	//! Retrieve a default input value:
+	bool getDefaultInputValue(unsigned int id, GraphValueVariant& val);
+
 protected:
 	// Pointer on the parent material:
 	SubstanceMaterial* _parent;
