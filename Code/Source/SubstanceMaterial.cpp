@@ -11,6 +11,7 @@
 #include "SubstanceMaterial.h"
 #include "GraphInstance.h"
 #include "GraphOutput.h"
+#include "GraphInput.h"
 #include <AzCore/IO/SystemFile.h>
 #include <AzToolsFramework/API/EditorAssetSystemAPI.h>
 
@@ -228,6 +229,63 @@ bool SubstanceMaterial::save(const char* basePath, const char* path)
 
 				writeSubstanceTexture(basePath, fbase, otype, out->GetGraphOutputID());
 			}
+		}
+
+		// Process the inputs:
+		int nin = graph->GetInputCount();
+		for(int j=0; j<nin; ++j) {
+			GraphInput* in = (GraphInput*)graph->GetInput(j);
+			AZStd::string key = string_format("%d_%d",(int)graph->GetGraphInstanceID(), (int)in->GetGraphInputID());
+
+			AZStd::string data = "";
+			const float* fval;
+			const int* ival;
+			const char* str;
+			int type = (int)in->GetInputType();
+
+			switch(type) {
+			case GraphInputType::Float1:
+				fval = (const float*)(in->GetValue()); 
+				data = string_format("x=\"%f\"", fval[0]);
+				break;
+			case GraphInputType::Float2:
+				fval = (const float*)(in->GetValue()); 
+				data = string_format("x=\"%f\" y=\"%f\"", fval[0], fval[1]);
+				break;
+			case GraphInputType::Float3:
+				fval = (const float*)(in->GetValue()); 
+				data = string_format("x=\"%f\" y=\"%f\" z=\"%f\"", fval[0], fval[1], fval[2]);
+				break;
+			case GraphInputType::Float4:
+				fval = (const float*)(in->GetValue()); 
+				data = string_format("x=\"%f\" y=\"%f\" z=\"%f\" w=\"%f\"", fval[0], fval[1], fval[2], fval[3]);
+				break;
+			case GraphInputType::Integer1:
+				ival = (const int*)(in->GetValue()); 
+				data = string_format("x=\"%d\"", ival[0]);
+				break;
+			case GraphInputType::Integer2:
+				ival = (const int*)(in->GetValue()); 
+				data = string_format("x=\"%d\" y=\"%d\"", ival[0], ival[1]);
+				break;
+			case GraphInputType::Integer3:
+				ival = (const int*)(in->GetValue()); 
+				data = string_format("x=\"%d\" y=\"%d\" z=\"%d\"", ival[0], ival[1], ival[2]);
+				break;
+			case GraphInputType::Integer4:
+				ival = (const int*)(in->GetValue()); 
+				data = string_format("x=\"%d\" y=\"%d\" z=\"%d\" w=\"%d\"", ival[0], ival[1], ival[2], ival[3]);
+				break;
+			case GraphInputType::String:
+				str = (const char*)(in->GetValue());
+				data = string_format("str=\"%s\"", str);
+				break;
+			default:
+				logERROR("Unsupported input type: "<<type);
+				break; 
+			}
+
+			content += string_format("  <Parameter ID=\"%s\" Type=\"%d\" %s />\n", key.c_str(),type,data.c_str());
 		}
 	}
 
