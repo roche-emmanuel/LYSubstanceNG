@@ -399,16 +399,6 @@ IGraphInstance* SubstanceGem::GetGraphInstance(GraphInstanceID graphInstanceID) 
 	return m_SubstanceLibAPI->GetGraphInstance(graphInstanceID);
 }
 
-ProceduralMaterialRenderUID SubstanceGem::RenderEditorPreviewASync()
-{
-	return m_SubstanceLibAPI->RenderEditorPreviewASync();
-}
-
-void SubstanceGem::RenderEditorPreviewSync()
-{
-	return m_SubstanceLibAPI->RenderEditorPreviewSync();
-}
-
 void SubstanceGem::QueueRender(IGraphInstance* pGraphInstance)
 {
 	if(!pGraphInstance) {

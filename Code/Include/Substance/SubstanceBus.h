@@ -60,12 +60,6 @@ public:
 	/// Renders all queued graphs synchronously.
 	virtual void RenderSync() = 0;
 
-	/// Special render mode used by editor plugin.
-	virtual ProceduralMaterialRenderUID RenderEditorPreviewASync() = 0;
-
-	/// Special render mode used by editor plugin and unit testing.
-	virtual void RenderEditorPreviewSync() = 0;
-
 	/// Given a substance archive and destination path, create the appropriate smtl/sub files.
 	virtual bool CreateProceduralMaterial(const char* basePath, const char* sbsarPath, const char* smtlPath) = 0;
 

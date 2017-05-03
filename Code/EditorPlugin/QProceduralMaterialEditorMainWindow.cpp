@@ -253,11 +253,6 @@ void QProceduralMaterialEditorMainWindow::OnEditorNotifyEvent(EEditorNotifyEvent
                 // We should now update the output previews:
                 UpdateOutputPreviews();
 
-                //render editor preview thumbnails
-                // EBUS_EVENT(SubstanceRequestBus, QueueRender, m_QueueRenderGraph);
-                // EBUS_EVENT_RESULT(m_RenderUID, SubstanceRequestBus, RenderEditorPreviewASync);
-                // m_StatusBarProgress->setMaximum(0);
-
                 m_QueueRenderGraph = nullptr;
 
                 //restore output settings
@@ -705,7 +700,7 @@ void QProceduralMaterialEditorMainWindow::CreateMaterial(IProceduralMaterial* pP
             { GraphOutputChannel::Emissive, EFTT_EMITTANCE },
         };
 
-        //assign textures
+        // Remove textures
         for (auto o = 0; o < pGraph->GetOutputCount(); o++)
         {
             IGraphOutput* pOutput = pGraph->GetOutput(o);
@@ -715,13 +710,30 @@ void QProceduralMaterialEditorMainWindow::CreateMaterial(IProceduralMaterial* pP
                 if (gotm[gc].srcType == pOutput->GetChannel())
                 {
                     SEfResTexture& resTexture = shaderResources.m_Textures[gotm[gc].dstType];
+                    // Remove the texture:
+                    resTexture.m_Name = "";
+                    break;
+                }
+            }
+        }
 
-                    // logDEBUG("Path 1: "<<pOutput->GetPath());
+        //save changes
+        pEditorMaterial->Update();
+        pEditorMaterial->Save();
+
+        // Remove textures
+        for (auto o = 0; o < pGraph->GetOutputCount(); o++)
+        {
+            IGraphOutput* pOutput = pGraph->GetOutput(o);
+
+            for (int gc = 0; gc < DIMOF(gotm); gc++)
+            {
+                if (gotm[gc].srcType == pOutput->GetChannel())
+                {
+                    SEfResTexture& resTexture = shaderResources.m_Textures[gotm[gc].dstType];
+                    // Assign the texture:
                     resTexture.m_Name = CryStringUtils::ToLower(PathUtil::ToUnixPath(pOutput->GetPath()));
-                    // logDEBUG("Path 2: "<<resTexture.m_Name.c_str());
                     resTexture.m_Name = Path::FullPathToGamePath(resTexture.m_Name.c_str());
-                    // logDEBUG("Requesting texture from path: "<< resTexture.m_Name.c_str());
-                    //resTexture.m_Ext.m_nFrameUpdated = -1; // This doesn't help to refresh the textures.
                     break;
                 }
             }
