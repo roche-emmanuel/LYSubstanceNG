@@ -394,11 +394,6 @@ IProceduralMaterial* SubstanceGem::GetMaterialFromPath(const char* path, bool bF
 	return mat;
 }
 
-IGraphInstance* SubstanceGem::GetGraphInstance(GraphInstanceID graphInstanceID) const
-{
-	return m_SubstanceLibAPI->GetGraphInstance(graphInstanceID);
-}
-
 void SubstanceGem::QueueRender(IGraphInstance* pGraphInstance)
 {
 	if(!pGraphInstance) {

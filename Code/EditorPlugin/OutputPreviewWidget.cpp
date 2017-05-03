@@ -64,23 +64,23 @@ IGraphInstance* COutputEnabledUndoCommand::CommitValue(bool enabled)
 
 		return pWidget->GetOutput()->GetGraphInstance();
 	}
-	else
-	{
-		IGraphInstance* pGraph = nullptr;
-		EBUS_EVENT_RESULT(pGraph, SubstanceRequestBus, GetGraphInstance, m_GraphInstanceID);
-		if (pGraph)
-		{
-			for (int i = 0; i < pGraph->GetOutputCount(); i++)
-			{
-				IGraphOutput* pOutput = pGraph->GetOutput(i);
-				if (pOutput->GetGraphOutputID() == m_GraphOutputID)
-				{
-					pOutput->SetEnabled(enabled);
-					return pGraph;
-				}
-			}
-		}
-	}
+	// else
+	// {
+	// 	IGraphInstance* pGraph = nullptr;
+	// 	EBUS_EVENT_RESULT(pGraph, SubstanceRequestBus, GetGraphInstance, m_GraphInstanceID);
+	// 	if (pGraph)
+	// 	{
+	// 		for (int i = 0; i < pGraph->GetOutputCount(); i++)
+	// 		{
+	// 			IGraphOutput* pOutput = pGraph->GetOutput(i);
+	// 			if (pOutput->GetGraphOutputID() == m_GraphOutputID)
+	// 			{
+	// 				pOutput->SetEnabled(enabled);
+	// 				return pGraph;
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	return nullptr;
 }

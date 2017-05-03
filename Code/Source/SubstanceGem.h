@@ -52,8 +52,7 @@ public:
 	virtual int GetMaximumOutputSize() const override;
 
 	virtual IProceduralMaterial* GetMaterialFromPath(const char* path, bool bForceLoad) const override;
-	virtual IGraphInstance* GetGraphInstance(GraphInstanceID graphInstanceID) const override;
-
+	
 	virtual void QueueRender(IGraphInstance* pGraphInstance) override;
 	virtual ProceduralMaterialRenderUID RenderASync() override;
 	virtual void RenderSync() override;

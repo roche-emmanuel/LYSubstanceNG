@@ -48,9 +48,6 @@ public:
 	  */
 	virtual IProceduralMaterial* GetMaterialFromPath(const char* path, bool bForceLoad) const = 0;
 
-	/// Retrieve a graph instance given a GraphInstanceID.
-	virtual IGraphInstance* GetGraphInstance(GraphInstanceID graphInstanceID) const = 0;
-
 	/// Queue a GraphInstance for rendering.
 	virtual void QueueRender(IGraphInstance* pGraphInstance) = 0;
 

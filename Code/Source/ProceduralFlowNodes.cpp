@@ -31,7 +31,7 @@ public:
 	IGraphInstance* GetGraphInstance(GraphInstanceID graphInstanceID) const
 	{
 		IGraphInstance* pGraph = nullptr;
-		EBUS_EVENT_RESULT(pGraph, SubstanceRequestBus, GetGraphInstance, graphInstanceID);
+		// EBUS_EVENT_RESULT(pGraph, SubstanceRequestBus, GetGraphInstance, graphInstanceID);
 		return pGraph;
 	}
 };
@@ -619,12 +619,12 @@ public:
 			{
 				GraphInstanceID graphInstanceID = GetPortGraphInstanceID(pActInfo, eI_GraphInstanceID);
 
-				IGraphInstance* pGraph = nullptr;
-				EBUS_EVENT_RESULT(pGraph, SubstanceRequestBus, GetGraphInstance, graphInstanceID);
-				if (pGraph)
-				{
-					EBUS_EVENT(SubstanceRequestBus, QueueRender, pGraph);
-				}
+				// IGraphInstance* pGraph = nullptr;
+				// EBUS_EVENT_RESULT(pGraph, SubstanceRequestBus, GetGraphInstance, graphInstanceID);
+				// if (pGraph)
+				// {
+				// 	EBUS_EVENT(SubstanceRequestBus, QueueRender, pGraph);
+				// }
 
 				ActivateOutput(pActInfo, eO_Done, true);
 			}

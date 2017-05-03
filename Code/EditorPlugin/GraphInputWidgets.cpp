@@ -96,26 +96,26 @@ IGraphInstance* CGraphUndoCommand::CommitValue(const GraphValueVariant& value)
 
 		return pGraph;
 	}
-	else
-	{
-		IGraphInstance* pGraph = nullptr;
-		EBUS_EVENT_RESULT(pGraph, SubstanceRequestBus, GetGraphInstance, m_GraphInstanceID);
-		if (pGraph)
-		{
-			AZ_TracePrintf("Default", "Number of inputs in GraphInputWidgets == %d",pGraph->GetInputCount());
+	// else
+	// {
+	// 	IGraphInstance* pGraph = nullptr;
+	// 	EBUS_EVENT_RESULT(pGraph, SubstanceRequestBus, GetGraphInstance, m_GraphInstanceID);
+	// 	if (pGraph)
+	// 	{
+	// 		AZ_TracePrintf("Default", "Number of inputs in GraphInputWidgets == %d",pGraph->GetInputCount());
 
-			for (int i = 0; i < pGraph->GetInputCount(); i++)
-			{
-				IGraphInput* pInput = pGraph->GetInput(i);
-				if (pInput->GetGraphInputID() == m_GraphInputID)
-				{
-					pInput->SetValue(value);
-					m_MainWindow->QueueRender(pGraph);
-					return pGraph;
-				}
-			}
-		}
-	}
+	// 		for (int i = 0; i < pGraph->GetInputCount(); i++)
+	// 		{
+	// 			IGraphInput* pInput = pGraph->GetInput(i);
+	// 			if (pInput->GetGraphInputID() == m_GraphInputID)
+	// 			{
+	// 				pInput->SetValue(value);
+	// 				m_MainWindow->QueueRender(pGraph);
+	// 				return pGraph;
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	return nullptr;
 }
