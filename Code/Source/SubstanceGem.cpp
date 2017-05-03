@@ -392,7 +392,6 @@ IProceduralMaterial* SubstanceGem::GetMaterialFromPath(const char* path, bool bF
 	AZ_TracePrintf("SubstanceGem", "Loading procedural material from path: %s", path);
 	SubstanceMaterial* mat = new SubstanceMaterial(path);
 	return mat;
-	// return m_SubstanceLibAPI->GetMaterialFromPath(CryStringUtils::ToLower(path).c_str(), bForceLoad);
 }
 
 IGraphInstance* SubstanceGem::GetGraphInstance(GraphInstanceID graphInstanceID) const
@@ -412,22 +411,23 @@ void SubstanceGem::RenderEditorPreviewSync()
 
 void SubstanceGem::QueueRender(IGraphInstance* pGraphInstance)
 {
-	m_SubstanceLibAPI->QueueRender(pGraphInstance);
+	if(!pGraphInstance) {
+		logERROR("Invalid graph instance to queue.");
+		return;
+	}
+
+	auto graph = (GraphInstance*)pGraphInstance;
+	_renderer->push(*(graph->getInstance()));
 }
 
 ProceduralMaterialRenderUID SubstanceGem::RenderASync()
 {
-	return m_SubstanceLibAPI->RenderASync();
+	return _renderer->run(SubstanceAir::Renderer::Run_Asynchronous);
 }
 
 void SubstanceGem::RenderSync()
 {
-	m_SubstanceLibAPI->RenderSync();
-}
-
-bool SubstanceGem::HasRenderCompleted(ProceduralMaterialRenderUID uid) const
-{
-	return m_SubstanceLibAPI->HasRenderCompleted(uid);
+	_renderer->run();
 }
 
 bool SubstanceGem::CreateProceduralMaterial(const char* basePath, const char* sbsarPath, const char* smtlPath)
@@ -555,7 +555,6 @@ bool SubstanceGem::CreateProceduralMaterial(const char* basePath, const char* sb
 	AZ_TracePrintf("SubstanceGem", "SMTL file %s written successfully.", fullPath.c_str());
 
 	return true;
-	//return m_SubstanceLibAPI->CreateProceduralMaterial(sbsarPath, smtlPath);
 }
 
 void SubstanceGem::writeSubstanceTexture(const AZStd::string& basePath, const AZStd::string& fbase, const AZStd::string& otype, unsigned int id)
@@ -588,8 +587,6 @@ bool SubstanceGem::SaveProceduralMaterial(IProceduralMaterial* pMaterial, const 
 	// Save the Procedural material with its current input values:
 	SubstanceMaterial* mat = (SubstanceMaterial*)pMaterial;
 	return mat->save(basePath, path);
-
-	// return m_SubstanceLibAPI->SaveProceduralMaterial(pMaterial, path);
 }
 
 void SubstanceGem::RemoveProceduralMaterial(IProceduralMaterial* pMaterial)

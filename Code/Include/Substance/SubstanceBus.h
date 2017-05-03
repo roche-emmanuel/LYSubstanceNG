@@ -60,9 +60,6 @@ public:
 	/// Renders all queued graphs synchronously.
 	virtual void RenderSync() = 0;
 
-	/// Used to query if an async render command has completed.
-	virtual bool HasRenderCompleted(ProceduralMaterialRenderUID uid) const = 0;
-
 	/// Special render mode used by editor plugin.
 	virtual ProceduralMaterialRenderUID RenderEditorPreviewASync() = 0;
 

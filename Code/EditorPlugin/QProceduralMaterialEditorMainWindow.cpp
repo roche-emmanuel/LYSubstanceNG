@@ -271,16 +271,6 @@ void QProceduralMaterialEditorMainWindow::OnEditorNotifyEvent(EEditorNotifyEvent
                 m_StatusBarProgress->setMaximum(1);
             }
         }
-        else
-        {
-            // bool hasRenderCompleted = false;
-            // EBUS_EVENT_RESULT(hasRenderCompleted, SubstanceRequestBus, HasRenderCompleted, m_RenderUID);
-            // if (hasRenderCompleted)
-            // {
-            //     m_RenderUID = INVALID_PROCEDURALMATERIALRENDERUID;
-            //     UpdateOutputPreviews();
-            // }
-        }
     }
     break;
     }

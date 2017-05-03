@@ -57,7 +57,6 @@ public:
 	virtual void QueueRender(IGraphInstance* pGraphInstance) override;
 	virtual ProceduralMaterialRenderUID RenderASync() override;
 	virtual void RenderSync() override;
-	virtual bool HasRenderCompleted(ProceduralMaterialRenderUID uid) const override;
 
 	virtual ProceduralMaterialRenderUID RenderEditorPreviewASync() override;
 	virtual void RenderEditorPreviewSync() override;
