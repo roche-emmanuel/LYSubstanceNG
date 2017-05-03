@@ -27,6 +27,10 @@
 struct CTextureLoadHandler_Substance;
 #endif // USE_SUBSTANCE
 
+// declare the renderer class:
+namespace SubstanceAir {
+class Renderer;
+};
 
 class SubstanceGem
 	: public CryHooksModule
@@ -71,6 +75,9 @@ private:
 	bool LoadEngineLibrary();
 
 	void writeSubstanceTexture(const AZStd::string& basePath, const AZStd::string& fbase, const AZStd::string& otype, unsigned int id);
+
+	// renderer instance:
+	SubstanceAir::Renderer* _renderer;
 
 	void*             m_SubstanceLib;
 	ISubstanceLibAPI* m_SubstanceLibAPI;

@@ -44,7 +44,7 @@ static const char* kSubstance_EngineLibrary_Default = "sse2";
 //////////////////////////////////////////////////////////////////////////
 struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 {
-	CTextureLoadHandler_Substance()
+	CTextureLoadHandler_Substance(SubstanceAir::Renderer* renderer) : _renderer(renderer)
 	{
 	}
 
@@ -106,18 +106,11 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 		auto inst = out->getInstance();
 
 		{
-			logDEBUG("Creating renderer...");
-			SubstanceAir::Renderer renderer;
-
-			auto ver = renderer.getCurrentVersion();
-			logDEBUG("Substance engine version: "<<ver.versionMajor<<"."
-				<<ver.versionMinor<<"."<< ver.versionPatch);
-
 			logDEBUG("Pushing graph instance");
-			renderer.push(*(graph->getInstance()));
+			_renderer->push(*(graph->getInstance()));
 
 			logDEBUG("Render the output...");
-			unsigned int res = renderer.run();
+			unsigned int res = _renderer->run();
 			logDEBUG("Render job UID = "<<res);
 
 			//  So now we should be able to grab our result:
@@ -170,6 +163,9 @@ struct CTextureLoadHandler_Substance : public ITextureLoadHandler
 	{
 		// No op.
 	}
+
+private:
+	SubstanceAir::Renderer* _renderer;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -201,8 +197,22 @@ void CommitRenderOptions(IConsoleCmdArgs* pArgs)
 }
 
 //////////////////////////////////////////////////////////////////////////
-SubstanceGem::SubstanceGem() : CryHooksModule(), m_SubstanceLib(nullptr), m_SubstanceLibAPI(nullptr), m_TextureLoadHandler(nullptr) { }
-SubstanceGem::~SubstanceGem() { }
+SubstanceGem::SubstanceGem() : CryHooksModule(), m_SubstanceLib(nullptr), m_SubstanceLibAPI(nullptr), m_TextureLoadHandler(nullptr) 
+{ 
+	// Create the renderer:
+	logDEBUG("Creating SubstanceGem renderer.");
+	_renderer = new SubstanceAir::Renderer();
+
+	auto ver = _renderer->getCurrentVersion();
+	logDEBUG("Substance engine version: "<<ver.versionMajor<<"."
+		<<ver.versionMinor<<"."<< ver.versionPatch);
+}
+
+SubstanceGem::~SubstanceGem() 
+{ 
+	logDEBUG("Destroying SubstanceAir renderer.");
+	delete _renderer;
+}
 
 void SubstanceGem::PostGameInitialize()
 {
@@ -271,7 +281,7 @@ void SubstanceGem::RegisterTextureHandler()
 	if (I3DEngine* p3DEngine = gEnv->p3DEngine)
 	{
 		logDEBUG("Registering Substance texture loader.");
-		m_TextureLoadHandler = new CTextureLoadHandler_Substance();
+		m_TextureLoadHandler = new CTextureLoadHandler_Substance(_renderer);
 		p3DEngine->AddTextureLoadHandler(m_TextureLoadHandler);
 	}
 }
