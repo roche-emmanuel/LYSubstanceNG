@@ -692,54 +692,54 @@ void QProceduralMaterialEditorMainWindow::CreateMaterial(IProceduralMaterial* pP
                 logERROR("Cannot create material "<<mtlPath.c_str());
                 return;
             }
+        }
+    
+        pEditorMaterial->SetSurfaceTypeName("mat_invulnerable");
 
-            pEditorMaterial->SetSurfaceTypeName("mat_invulnerable");
+        SInputShaderResources& shaderResources = pEditorMaterial->GetShaderResources();
+        // shaderResources.Cleanup();
+        
+        struct GraphOutputTextureMap
+        {
+            GraphOutputChannel srcType;
+            EEfResTextures dstType;
+        };
 
-            SInputShaderResources& shaderResources = pEditorMaterial->GetShaderResources();
+        GraphOutputTextureMap gotm[] = {
+            { GraphOutputChannel::Diffuse, EFTT_DIFFUSE },
+            { GraphOutputChannel::Normal, EFTT_NORMALS },
+            { GraphOutputChannel::Specular, EFTT_SPECULAR },
+            { GraphOutputChannel::Environment, EFTT_ENV },
+            { GraphOutputChannel::Opacity, EFTT_OPACITY },
+            { GraphOutputChannel::Height, EFTT_HEIGHT },
+            { GraphOutputChannel::Emissive, EFTT_EMITTANCE },
+        };
 
-            struct GraphOutputTextureMap
+        //assign textures
+        for (auto o = 0; o < pGraph->GetOutputCount(); o++)
+        {
+            IGraphOutput* pOutput = pGraph->GetOutput(o);
+
+            for (int gc = 0; gc < DIMOF(gotm); gc++)
             {
-                GraphOutputChannel srcType;
-                EEfResTextures dstType;
-            };
-
-            GraphOutputTextureMap gotm[] = {
-                { GraphOutputChannel::Diffuse, EFTT_DIFFUSE },
-                { GraphOutputChannel::Normal, EFTT_NORMALS },
-                { GraphOutputChannel::Specular, EFTT_SPECULAR },
-                { GraphOutputChannel::Environment, EFTT_ENV },
-                { GraphOutputChannel::Opacity, EFTT_OPACITY },
-                { GraphOutputChannel::Height, EFTT_HEIGHT },
-                { GraphOutputChannel::Emissive, EFTT_EMITTANCE },
-            };
-
-            //assign textures
-            for (auto o = 0; o < pGraph->GetOutputCount(); o++)
-            {
-                IGraphOutput* pOutput = pGraph->GetOutput(o);
-
-                for (int gc = 0; gc < DIMOF(gotm); gc++)
+                if (gotm[gc].srcType == pOutput->GetChannel())
                 {
-                    if (gotm[gc].srcType == pOutput->GetChannel())
-                    {
-                        SEfResTexture& resTexture = shaderResources.m_Textures[gotm[gc].dstType];
-                        // logDEBUG("Path 1: "<<pOutput->GetPath());
-                        resTexture.m_Name = CryStringUtils::ToLower(PathUtil::ToUnixPath(pOutput->GetPath()));
-                        // logDEBUG("Path 2: "<<resTexture.m_Name.c_str());
-                        resTexture.m_Name = Path::FullPathToGamePath(resTexture.m_Name.c_str());
-                        // logDEBUG("Requesting texture from path: "<< resTexture.m_Name.c_str());
-                        break;
-                    }
+                    SEfResTexture& resTexture = shaderResources.m_Textures[gotm[gc].dstType];
+
+                    // logDEBUG("Path 1: "<<pOutput->GetPath());
+                    resTexture.m_Name = CryStringUtils::ToLower(PathUtil::ToUnixPath(pOutput->GetPath()));
+                    // logDEBUG("Path 2: "<<resTexture.m_Name.c_str());
+                    resTexture.m_Name = Path::FullPathToGamePath(resTexture.m_Name.c_str());
+                    // logDEBUG("Requesting texture from path: "<< resTexture.m_Name.c_str());
+                    //resTexture.m_Ext.m_nFrameUpdated = -1; // This doesn't help to refresh the textures.
+                    break;
                 }
             }
+        }
 
-            //save changes
-            pEditorMaterial->Update();
-            pEditorMaterial->Save();
-        }
-        else {            
-            pEditorMaterial->Update();
-        }
+        //save changes
+        pEditorMaterial->Update();
+        pEditorMaterial->Save();
     }
 }
 
