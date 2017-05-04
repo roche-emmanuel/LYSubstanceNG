@@ -1,10 +1,10 @@
 # Substance NG Gem for Lumberyard
 
-SubstanceNG is a re-implementation og the Substance Gem provided by default for Lumberyard.
+SubstanceNG is a re-implementation og the Substance Gem provided by default for [Lumberyard](https://aws.amazon.com/lumberyard/).
 
 I initiated this project when we realized while working on Lumberyard game that the default Substance Gem had serious limitations: mainly, it seemed to be used an old version of the substance engine, and thus, could not be used to load substance archives generated from Substance Designer 6 for instance (some simple substances could still work, but not the one using the new substance engine 6 features (?)).
 
-So I started with some investigation on the available Susbtance plugins for the major engines, and in this process, found the (Susbtance plugin for Unreal Engine 4)[https://www.allegorithmic.com/buy/download]. I downloaded this plugin, and analyzed the sources which were using a completely different API to access the substance engine. Turned out this version was using the substance engine 6.
+So I started with some investigation on the available Susbtance plugins for the major engines, and in this process, found the [Susbtance plugin for Unreal Engine 4](https://www.allegorithmic.com/buy/download). I downloaded this plugin, and analyzed the sources which were using a completely different API to access the substance engine. Turned out this version was using the substance engine 6.
 
 Thus I started with a copy of the Substance Gem sources, and updated them progressively to incorporate this latest version of the Substance engine, and get ride of the all version in parallel.
 
