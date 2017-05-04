@@ -8,7 +8,7 @@ So I started with some investigation on the available Susbtance plugins for the 
 
 Thus I started with a copy of the Substance Gem sources, and updated them progressively to incorporate this latest version of the Substance engine, and get ride of the all version in parallel.
 
-Note that this Gem was developed with Lumberyard version 1.8.0.1 (beta) but it should also work with version 1.9.0.0
+Note that this Gem was developed with Lumberyard version 1.8.0.1 (beta) but it should also work with version 1.9.0.0. It was built on Windows 10 x64 with Visual Studio 201 Community Edition (only the libraries for **win64** are provided here for the susbtance framework).
 
 ## New features in this version
 
