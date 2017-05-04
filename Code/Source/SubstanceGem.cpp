@@ -348,12 +348,12 @@ void SubstanceGem::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR l
 
 int SubstanceGem::GetMinimumOutputSize() const
 {
-	return m_SubstanceLibAPI->GetMinimumOutputSize();
+	return 16; // hardcoded value for now.
 }
 
 int SubstanceGem::GetMaximumOutputSize() const
 {
-	return m_SubstanceLibAPI->GetMaximumOutputSize();
+	return 4096; // hardcoded value for now.
 }
 
 IProceduralMaterial* SubstanceGem::GetMaterialFromPath(const char* path, bool bForceLoad) const
@@ -576,7 +576,8 @@ bool SubstanceGem::SaveProceduralMaterial(IProceduralMaterial* pMaterial, const 
 
 void SubstanceGem::RemoveProceduralMaterial(IProceduralMaterial* pMaterial)
 {
-	m_SubstanceLibAPI->RemoveProceduralMaterial(pMaterial);
+	SubstanceMaterial* mat = (SubstanceMaterial*)pMaterial;
+	mat->removeFiles();
 }
 
 ISubstanceLibAPI* SubstanceGem::GetSubstanceLibAPI() const

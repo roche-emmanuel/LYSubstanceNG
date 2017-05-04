@@ -361,4 +361,9 @@ void SubstanceMaterial::ReimportSubstance()
 	AZ_TracePrintf("SubstanceGem", "SubstanceMaterial::ReimportSubstance() not doing anything.");
 }
 
+void SubstanceMaterial::removeFiles()
+{
+	logERROR("SubstanceMaterial::removeFiles not implemented yet.");
+}
+
 #endif // USE_SUBSTANCE

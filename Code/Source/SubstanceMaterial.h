@@ -49,6 +49,9 @@ public:
 	// Write substance base path:
 	void writeSubstanceTexture(const AZStd::string& basePath, const AZStd::string& fbase, const AZStd::string& otype, unsigned int id);
 
+	// Remove the material files:
+	void removeFiles();
+	
 protected:
 	// Helper method used to load the data from XML:
 	void LoadMaterialFromXML();
