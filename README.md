@@ -10,6 +10,8 @@ Thus I started with a copy of the Substance Gem sources, and updated them progre
 
 Note that this Gem was developed with Lumberyard version 1.8.0.1 (beta) but it should also work with version 1.9.0.0. It was built on Windows 10 x64 with Visual Studio 201 Community Edition (only the libraries for **win64** are provided here for the susbtance framework).
 
+For more information on this project please check (the project homepage)[http://wiki.nervtech.org/doku.php?id=public:projects:substanceng:substanceng].
+
 ## New features in this version
 
   * Support for substance archives generated with Substance engine version 6
